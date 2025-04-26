@@ -71,3 +71,45 @@
     background-color: transparent; /* Standard property for compatibility */
     -fx-background-color: transparent;
 }
+
+.ship {
+    background-color: #555555; /* Standard property for compatibility */
+    -fx-background-color: #555555;
+    border-color: #333333; /* Standard property for compatibility */
+    -fx-border-color: #333333;
+}
+
+.hit {
+    background-color: #FF0000; /* Standard property for compatibility */
+    -fx-background-color: #FF0000;
+    border-color: #990000; /* Standard property for compatibility */
+    -fx-border-color: #990000;
+}
+
+.miss {
+    background-color: #CCCCCC; /* Standard property for compatibility */
+    -fx-background-color: #CCCCCC;
+    border-color: #999999; /* Standard property for compatibility */
+    -fx-border-color: #999999;
+}
+
+.sunk {
+    background-color: #990000; /* Standard property for compatibility */
+    -fx-background-color: #990000;
+    border-color: #660000; /* Standard property for compatibility */
+    -fx-border-color: #660000;
+}
+
+.pane-naves{
+    background-color: #1a2a6c; /* Fallback for compatibility */
+    -fx-background-color: linear-gradient(to bottom right, #243c9b, #11649f, #1e8cdb);
+    
+    border-radius: 10px; /* Fallback for compatibility */
+    -fx-background-radius: 10;
+    border-color: #ffffff; /* Fallback for compatibility */
+    -fx-border-color: #ffffff;
+    border-width: 2px; /* Fallback for compatibility */
+    -fx-border-width: 2;
+    border-radius: 10px; /* Fallback for compatibility */
+    -fx-border-radius: 10;
+}
