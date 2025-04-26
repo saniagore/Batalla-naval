@@ -113,3 +113,48 @@
     border-radius: 10px; /* Fallback for compatibility */
     -fx-border-radius: 10;
 }
+
+.boton-estandar {
+    background-color: linear-gradient(to bottom, #1e8cdb, #11649f); /* Standard property for compatibility */
+    -fx-background-color: linear-gradient(to bottom, #1e8cdb, #11649f);
+    -fx-text-fill: white;
+    font-family: 'Arial'; /* Standard property for compatibility */
+    -fx-font-family: 'Arial';
+    font-weight: bold; /* Standard property for compatibility */
+    -fx-font-weight: bold;
+    font-size: 14px; /* Standard property for compatibility */
+    -fx-font-size: 14px;
+    padding: 8px 16px; /* Standard property for compatibility */
+    -fx-padding: 8 16;
+    border-radius: 5px; /* Standard property for compatibility */
+    -fx-background-radius: 5;
+    border-radius: 5px; /* Standard property for compatibility */
+    -fx-border-radius: 5;
+    border-width: 1px; /* Standard property for compatibility */
+    -fx-border-width: 1;
+    border-color: rgba(255, 255, 255, 0.3); /* Standard property for compatibility */
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 1);
+}
+
+.boton-estandar:hover {
+    background-color: linear-gradient(to bottom, #2a9df4, #1a7abf); /* Standard property for compatibility */
+    -fx-background-color: linear-gradient(to bottom, #2a9df4, #1a7abf);
+    cursor: pointer; /* Standard property for compatibility */
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 7, 0, 0, 1);
+}
+
+.boton-estandar:pressed {
+    background-color: linear-gradient(to bottom, #11649f, #0b4a7a); /* Standard property for compatibility */
+    -fx-background-color: linear-gradient(to bottom, #11649f, #0b4a7a);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 3, 0, 0, 1);
+}
+
+.boton-deshabilitado {
+    background-color: rgba(30, 140, 219, 0.3); /* Standard property for compatibility */
+    -fx-background-color: rgba(30, 140, 219, 0.3);
+    -fx-text-fill: rgba(255, 255, 255, 0.7);
+    border-color: rgba(255, 255, 255, 0.2); /* Standard property for compatibility */
+    -fx-border-color: rgba(255, 255, 255, 0.2);
+}
