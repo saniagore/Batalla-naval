@@ -1,0 +1,73 @@
+.root {
+    background-color: #1a2a6c; /* Fallback for compatibility */
+    -fx-background-color: linear-gradient(to bottom right, #243c9b, #11649f, #1e8cdb);
+
+    max-width: 600; /* Standard property for compatibility */
+    -fx-max-width: 600;
+    max-height: 800;
+    -fx-max-height: 800;
+}
+
+/* Estilo para la cuadrícula principal */
+#gridPane {
+    background-color: rgba(255, 255, 255, 0.1); /* Fallback for compatibility */
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px; /* Fallback for compatibility */
+    -fx-background-radius: 10;
+    border-color: #ffffff; /* Fallback for compatibility */
+    -fx-border-color: #ffffff;
+    border-width: 2px; /* Fallback for compatibility */
+    -fx-border-width: 2;
+    border-radius: 10px; /* Fallback for compatibility */
+    -fx-border-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);
+}
+
+/* Estilo para las celdas de coordenadas */
+.coordenada {
+    background-color: transparent; /* Standard property for compatibility */
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    border-width: 0; /* Standard property for compatibility */
+    -fx-border-width: 0;
+    border-color: transparent; /* Standard property for compatibility */
+    -fx-border-color: transparent;
+    font-family: 'Arial Black'; /* Standard property for compatibility */
+    -fx-font-family: 'Arial Black';
+    font-size: 16px; /* Standard property for compatibility */
+    -fx-font-size: 16;
+    font-weight: bold; /* Standard property for compatibility */
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.8), 2, 0, 1, 1);
+}
+
+/* Estilo para las celdas del tablero */
+.celda-tablero {
+    background-color: rgba(255, 255, 255, 0.2); /* Standard property for compatibility */
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3); /* Standard property for compatibility */
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    border-width: 1px; /* Standard property for compatibility */
+    -fx-border-width: 1;
+}
+
+.celda-tablero:hover {
+    background-color: rgba(255, 255, 255, 0.3); /* Standard property for compatibility */
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Estilo para las líneas divisorias */
+.linea-divisoria {
+    stroke: white; /* Standard property for compatibility */
+    -fx-stroke: white;
+    stroke-width: 2; /* Standard property for compatibility */
+    -fx-stroke-width: 2;
+}
+
+/* Estilo para el borde del tablero */
+#anchorPane {
+    background-color: transparent; /* Standard property for compatibility */
+    -fx-background-color: transparent;
+}
