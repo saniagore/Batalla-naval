@@ -24,6 +24,7 @@ public class GameV extends Stage {
             setImagenes();
             Scene scene = new Scene(root);
             setScene(scene);
+            getIcons().add(new Image(getClass().getResourceAsStream("/com/example/sesion4/icono.png")));
             setTitle("Batalla naval");
             setResizable(false);
             show();

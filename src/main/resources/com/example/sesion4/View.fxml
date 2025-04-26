@@ -178,12 +178,12 @@
                   
                                                 </children>
             </GridPane>
-            <Pane fx:id="submarinos" layoutX="300.0" layoutY="853.0" maxHeight="67.0" maxWidth="201.0" minHeight="40" minWidth="120" prefHeight="67.0" prefWidth="201.0" style="-fx-cursor: hand;" styleClass="pane-naves" userData="3" />
-            <Pane fx:id="destructores" layoutX="564.0" layoutY="853.0" maxHeight="67.0" maxWidth="134.0" minHeight="40" minWidth="80" prefHeight="68.0" prefWidth="134.0" style="-fx-cursor: hand;" styleClass="pane-naves" userData="2" />
-            <Pane fx:id="fragatas" layoutX="767.0" layoutY="853.0" maxHeight="67.0" maxWidth="67.0" minHeight="40" minWidth="60.0" prefHeight="67.0" prefWidth="67.0" style="-fx-cursor: hand;" styleClass="pane-naves" userData="1" />
+            <Pane fx:id="submarinos" layoutX="301.0" layoutY="854.0" maxHeight="75.0" maxWidth="214.0" minHeight="40" minWidth="120" prefHeight="73.0" prefWidth="206.0" style="-fx-cursor: hand;" styleClass="pane-naves" userData="3" />
+            <Pane fx:id="destructores" layoutX="565.0" layoutY="854.0" maxHeight="75.0" maxWidth="141.0" minHeight="40" minWidth="80" prefHeight="73.0" prefWidth="138.0" style="-fx-cursor: hand;" styleClass="pane-naves" userData="2" />
+            <Pane fx:id="fragatas" layoutX="754.0" layoutY="853.0" maxHeight="75.0" maxWidth="70.0" minHeight="40" minWidth="60.0" prefHeight="73.0" prefWidth="70.0" style="-fx-cursor: hand;" styleClass="pane-naves" userData="1" />
             <Button fx:id="btnIniciar" layoutX="734.0" layoutY="752.0" onAction="#iniciarJuego" styleClass="boton-estandar" text="Iniciar Juego" />
             <Button fx:id="btnReiniciar" layoutX="732.0" layoutY="797.0" onAction="#reiniciar" prefHeight="34.0" prefWidth="124.0" styleClass="boton-estandar" text="Reiniciar" />
-            <Pane fx:id="portaaviones" layoutX="-38.0" layoutY="853.0" maxHeight="67.0" maxWidth="270.0" minHeight="40" minWidth="160" prefHeight="67.0" prefWidth="268.0" style="-fx-cursor: hand;" styleClass="pane-naves" userData="4" />
+            <Pane fx:id="portaaviones" layoutX="-38.0" layoutY="853.0" maxHeight="75.0" maxWidth="282.0" minHeight="40" minWidth="160" prefHeight="73.0" prefWidth="275.0" style="-fx-cursor: hand;" styleClass="pane-naves" userData="4" />
          </children>
       </AnchorPane>
    </center>

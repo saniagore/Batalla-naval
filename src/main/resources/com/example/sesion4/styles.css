@@ -45,6 +45,8 @@
 
 /* Estilo para las celdas del tablero */
 .celda-tablero {
+    opacity: 1.0;
+    -fx-opacity: 1.0;
     background-color: rgba(255, 255, 255, 0.2); /* Standard property for compatibility */
     -fx-background-color: rgba(255, 255, 255, 0.2);
     border-color: rgba(255, 255, 255, 0.3); /* Standard property for compatibility */
@@ -101,6 +103,9 @@
 }
 
 .pane-naves{
+    opacity: 1.0;
+    -fx-opacity: 1.0;
+    -fx-background-color: transparent;
     background-color: #1a2a6c; /* Fallback for compatibility */
     -fx-background-color: linear-gradient(to bottom right, #243c9b, #11649f, #1e8cdb);
     
@@ -158,3 +163,4 @@
     border-color: rgba(255, 255, 255, 0.2); /* Standard property for compatibility */
     -fx-border-color: rgba(255, 255, 255, 0.2);
 }
+
