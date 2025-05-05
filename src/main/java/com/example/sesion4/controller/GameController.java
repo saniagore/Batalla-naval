@@ -1,15 +1,20 @@
 package com.example.sesion4.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.example.sesion4.view.GameV;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
+
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.Point2D;
-import javafx.scene.layout.Region;
 
 public class GameController {
+    @SuppressWarnings("unused")
     private GameV view;
+    @SuppressWarnings("unused")
     private Point2D originalPosition;
 
     @FXML
@@ -23,123 +28,69 @@ public class GameController {
     @FXML
     private GridPane gridPane;
 
-    private Pane selectedShip = null;
-    private int shipSize = 0;
+    private Map<Pane, String> shipMap = new HashMap<>();
+    String selectedShip = "";
 
     @FXML
     public void initialize() {
-        // Configurar tamaños de los barcos (alternativa a userData)
-        portaaviones.setUserData(4); // Ahora sí es Integer
-        destructores.setUserData(2);
-        submarinos.setUserData(3);
-        fragatas.setUserData(1);
+        shipMap.put(portaaviones, "portaaviones");
+        shipMap.put(destructores, "destructores");
+        shipMap.put(submarinos, "submarinos");
+        shipMap.put(fragatas, "fragatas");
 
-        // Configurar eventos para los barcos
-        setupShipSelection(portaaviones);
-        setupShipSelection(destructores);
-        setupShipSelection(submarinos);
-        setupShipSelection(fragatas);
-
-        // Configurar eventos para las celdas del tablero
-        setupGridCells();
+        setupCellClickHandlers();
+        setupShipClickHandlers();
     }
 
-    private void setupShipSelection(Pane ship) {
-        ship.setOnMouseClicked(event -> {
-            System.out.println("Barco clickeado: " + ship.getId());
+    // CELDAS GRIDPANE
+    // -------------------------------------------------------------------------------------------
 
-            // Deseleccionar cualquier barco previo
-            if (selectedShip != null) {
-                selectedShip.getStyleClass().remove("ship-selected");
-            }
-
-            // Seleccionar nuevo barco
-            selectedShip = ship;
-            selectedShip.getStyleClass().add("ship-selected");
-
-            // Obtener tamaño del barco de forma segura
-            if (ship.getUserData() instanceof Integer) {
-                shipSize = (Integer) ship.getUserData();
-            } else {
-                // Valor por defecto si no hay userData o es incorrecto
-                shipSize = getDefaultShipSize(ship.getId());
-            }
-
-            System.out.println("Barco seleccionado. Tamaño: " + shipSize);
-
-            // Guardar posición original
-            originalPosition = new Point2D(ship.getLayoutX(), ship.getLayoutY());
-        });
-    }
-
-    private int getDefaultShipSize(String shipId) {
-        return switch (shipId) {
-            case "portaaviones" -> 4;
-            case "destructores" -> 3;
-            case "submarinos" -> 3;
-            case "fragatas" -> 2;
-            default -> 1;
-        };
-    }
-
-    private void setupGridCells() {
+    private void setupCellClickHandlers() {
         gridPane.getChildren().forEach(node -> {
-            if (node instanceof Pane && node.getStyleClass().contains("celda-tablero")) {
-                node.setOnMouseClicked(event -> {
-                    if (selectedShip == null) {
-                        System.out.println("Ningún barco seleccionado");
-                        return;
-                    }
+            Integer row = GridPane.getRowIndex(node);
+            Integer col = GridPane.getColumnIndex(node);
+            int r = row == null ? 0 : row;
+            int c = col == null ? 0 : col;
 
-                    Pane cell = (Pane) event.getSource();
-                    Integer colIndex = GridPane.getColumnIndex(cell);
-                    Integer rowIndex = GridPane.getRowIndex(cell);
-
-                    System.out.println("Celda clickeada. Col: " + colIndex + ", Fila: " + rowIndex);
-
-                    if (colIndex == null || rowIndex == null) {
-                        System.out.println("Índices de celda no válidos");
-                        return;
-                    }
-
-                    // Verificar si el barco cabe horizontalmente
-                    if (colIndex + shipSize > gridPane.getColumnConstraints().size()) {
-                        System.out.println("No cabe horizontalmente");
-                        return;
-                    }
-
-                    // Colocar el barco
-                    placeShipOnGrid(colIndex, rowIndex);
-                });
+            if (node instanceof Pane) {
+                node.setOnMouseClicked(event -> handleCellClick(event, r, c));
             }
         });
     }
 
-    private Pane findCell(int colIndex, int rowIndex) {
-        for (var node : gridPane.getChildren()) {
-            if (node instanceof Pane && GridPane.getColumnIndex(node) != null && GridPane.getRowIndex(node) != null) {
-                if (GridPane.getColumnIndex(node) == colIndex && GridPane.getRowIndex(node) == rowIndex) {
-                    return (Pane) node;
-                }
-            }
+    private void handleCellClick(MouseEvent event, int row, int col) {
+        switch (event.getButton()) {
+            case PRIMARY:
+                System.out.println("fila" + row + "columna" + col);
+                break;
+            case SECONDARY:
+                break;
+            default:
+                break;
         }
-        return null;
     }
 
-    private void placeShipOnGrid(int colIndex, int rowIndex) {
-        Pane targetCell = findCell(colIndex, rowIndex);
-        if (targetCell == null)
-            return;
-        selectedShip.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        selectedShip.setMinSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
-        Pane parentContainer = (Pane) selectedShip.getParent();
-        parentContainer.getChildren().remove(selectedShip);
-        targetCell.getChildren().add(selectedShip);
-        selectedShip.setLayoutX(0);
-        selectedShip.setLayoutY(0);
-        selectedShip.getStyleClass().remove("ship-selected");
-        selectedShip = null;
+    // PANE
+    // ----------------------------------------------------------------------------------------
+
+    private void setupShipClickHandlers() {
+        // Agregar manejadores de eventos a cada tipo de barco
+        portaaviones.setOnMouseClicked(this::handleShipClick);
+        destructores.setOnMouseClicked(this::handleShipClick);
+        submarinos.setOnMouseClicked(this::handleShipClick);
+        fragatas.setOnMouseClicked(this::handleShipClick);
     }
+
+    private void handleShipClick(MouseEvent event) {
+        Pane clickedShip = (Pane) event.getSource();
+        originalPosition = new Point2D(clickedShip.getLayoutX(), clickedShip.getLayoutY());
+        selectedShip = shipMap.get(clickedShip);
+
+        System.out.println("Barco seleccionado: " + selectedShip);
+        event.consume();
+    }
+
+    // --------------------------------------------------------------------------------------------
 
     @FXML
     public void iniciarJuego() {
@@ -149,10 +100,6 @@ public class GameController {
     @FXML
     public void reiniciar() {
         System.out.println("Reiniciando juego...");
-        if (selectedShip != null) {
-            selectedShip.getStyleClass().remove("ship-selected");
-            selectedShip = null;
-        }
     }
 
     public void setView(GameV view) {
