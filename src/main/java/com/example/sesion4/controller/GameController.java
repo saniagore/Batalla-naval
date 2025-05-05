@@ -1,15 +1,20 @@
 package com.example.sesion4.controller;
 
+import com.example.sesion4.view.PopupWindow;
+import com.example.sesion4.view.GameV;
+import com.example.sesion4.model.CuadriculaJuego;
+import com.example.sesion4.model.Barco;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.example.sesion4.view.GameV;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
-
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.Point2D;
+
+import java.util.ArrayList;
+
 
 public class GameController {
     @SuppressWarnings("unused")
@@ -28,11 +33,26 @@ public class GameController {
     @FXML
     private GridPane gridPane;
 
+    private CuadriculaJuego cuadriculaJuego;
+
     private Map<Pane, String> shipMap = new HashMap<>();
+
+    private ArrayList<Barco> barcos = new ArrayList<>();
+
+    int cantFragatas = 0;
+    int cantDestructores = 0;
+    int cantSubmarinos = 0;
+    int cantPortaAviones = 0;
+
     String selectedShip = "";
+    Boolean isHorizontal = true;
 
     @FXML
     public void initialize() {
+        cuadriculaJuego = new CuadriculaJuego();
+        cuadriculaJuego.inicializarTablero();
+
+
         shipMap.put(portaaviones, "portaaviones");
         shipMap.put(destructores, "destructores");
         shipMap.put(submarinos, "submarinos");
@@ -61,15 +81,98 @@ public class GameController {
     private void handleCellClick(MouseEvent event, int row, int col) {
         switch (event.getButton()) {
             case PRIMARY:
-                System.out.println("fila" + row + "columna" + col);
+
+                switch (selectedShip) {
+                    case "fragatas":
+                        try{
+                            if (cantFragatas == 4)throw new Exception("Cantidad de fragatas maxima alcanzada");
+                            barcos.addLast(new Barco(selectedShip));
+                            barcos.get(barcos.size() - 1).agregarPosicion(row, col);
+                            Pane clickedPane = (Pane) event.getSource();
+                            clickedPane.setStyle("-fx-background-color: black;");
+                            if(cuadriculaJuego.getCelda(row-1, col-1)==1){
+                                barcos.removeLast();
+                                throw new Exception("Estas intentado colocar un barco sobre otro");
+                            }
+                            cuadriculaJuego.setCelda(row-1, col-1, 1);
+                            cantFragatas++;
+                        }catch(Exception e){
+                            if (e.getMessage().equals("Cantidad de fragatas máxima alcanzada")) {
+                                PopupWindow.Window("Límite alcanzado", e.getMessage());
+                            } else {
+                                barcos.removeLast();
+                                PopupWindow.Window("Error de validación", e.getMessage());
+                            }
+                        }
+
+                        break;
+                        
+                    case "destructores":
+                        try{
+                            if (cantDestructores == 3)throw new Exception("Cantidad de destructores maxima alcanzada");
+                            barcos.addLast(new Barco(selectedShip));
+                            asignarValores(2, row, col);
+                            cantDestructores++;
+                        }catch(Exception e){
+                            if(e.getMessage().equals("Estas intentado colocar un barco sobre otro")){
+                                barcos.removeLast();
+                                PopupWindow.Window("Error", e.getMessage());
+                            }else{
+                                PopupWindow.Window("Error", e.getMessage());
+                            }
+                        }
+
+                        break;
+                    case "submarinos":
+                        try{
+                            if (cantSubmarinos == 2) throw new Exception("Cantidad de submarinos maxima alcanzada");
+                            barcos.addLast(new Barco(selectedShip));
+                            asignarValores(3, row, col);
+                            cantSubmarinos++;
+                        }catch(Exception e){
+                            if(e.getMessage().equals("Estas intentado colocar un barco sobre otro")){
+                                barcos.removeLast();
+                                PopupWindow.Window("Error", e.getMessage());
+                            }else{
+                                PopupWindow.Window("Error", e.getMessage());
+                            }
+                        }
+
+                        break;
+                    case "portaaviones":
+
+                        try{
+                            if (cantPortaAviones == 1) throw new Exception("Cantidad de porta aviones maxima alcanzada");
+                            barcos.addLast(new Barco(selectedShip));
+                            asignarValores(4, row, col);
+                            cantPortaAviones++;
+                        } catch (Exception e) {
+                            if(e.getMessage().equals("Estas intentado colocar un barco sobre otro")){
+                                barcos.removeLast();
+                                PopupWindow.Window("Error", e.getMessage());
+                            }else{
+                                PopupWindow.Window("Error", e.getMessage());
+                            }
+                        }
+
+                        break;
+
+                    default:
+                        PopupWindow.Window("Error", "Seleccione una nave primero para colocar");
+                        break;
+                }
+
                 break;
+
             case SECONDARY:
+
                 break;
+
             default:
+
                 break;
         }
     }
-
     // PANE
     // ----------------------------------------------------------------------------------------
 
@@ -85,12 +188,52 @@ public class GameController {
         Pane clickedShip = (Pane) event.getSource();
         originalPosition = new Point2D(clickedShip.getLayoutX(), clickedShip.getLayoutY());
         selectedShip = shipMap.get(clickedShip);
-
-        System.out.println("Barco seleccionado: " + selectedShip);
         event.consume();
     }
 
     // --------------------------------------------------------------------------------------------
+
+    public void asignarValores(int tamaño, int row, int col) {
+        for (int i = 0; i < tamaño; i++) {
+            int newRow = isHorizontal ? row : row + i;
+            int newCol = isHorizontal ? col + i : col;
+            if(newRow > 10 || newCol > 10){
+                barcos.remove(barcos.size() - 1);
+                throw new RuntimeException("El barco se encuentra fuera del plano");
+            }
+            barcos.get(barcos.size() - 1).agregarPosicion(newRow, newCol);
+            if(cuadriculaJuego.getCelda(newRow-1, newCol-1) == 1){
+                for (int j = 0; j < tamaño; j++) {
+                    int newRowRemove = isHorizontal ? row : row + i;
+                    int newColRemove = isHorizontal ? col + i : col;
+                    cuadriculaJuego.setCelda(newRowRemove-1, newColRemove-1, 0);
+                }
+                throw new RuntimeException("Estas intentado colocar un barco sobre otro");
+            }
+            cuadriculaJuego.setCelda(newRow-1, newCol-1, 1);
+        }
+        for (int i = 0; i < tamaño; i++) {
+            int newRow = isHorizontal ? row : row + i;
+            int newCol = isHorizontal ? col + i : col;
+            gridPane.getChildren().forEach(node -> {
+                Integer nodeRow = GridPane.getRowIndex(node);
+                Integer nodeCol = GridPane.getColumnIndex(node);
+                int r = nodeRow == null ? 0 : nodeRow;
+                int c = nodeCol == null ? 0 : nodeCol;
+                if (r == newRow && c == newCol && node instanceof Pane) {
+                    Pane targetPane = (Pane) node;
+                    targetPane.setStyle("-fx-background-color: black;");
+                }
+            });
+
+        }
+    }
+
+
+    public void removerBarco(int row, int col){
+
+    }
+
 
     @FXML
     public void iniciarJuego() {
@@ -98,11 +241,12 @@ public class GameController {
     }
 
     @FXML
-    public void reiniciar() {
-        System.out.println("Reiniciando juego...");
+    public void posicion() {
+        isHorizontal = !isHorizontal;
     }
 
     public void setView(GameV view) {
         this.view = view;
     }
+
 }
