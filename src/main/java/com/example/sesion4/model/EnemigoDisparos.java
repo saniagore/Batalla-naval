@@ -12,8 +12,19 @@ public class EnemigoDisparos {
         cuadriculaDisparos.inicializarTablero();
     }
 
-    public void disparar(){
-        cuadriculaDisparos.setCelda(numeroAzar(), numeroAzar(), 2);
+    public int[] disparar() {
+        int row, col;
+        do {
+            row = numeroAzar();
+            col = numeroAzar();
+
+            if (cuadriculaDisparos.getCelda(row, col) != 2) {
+                cuadriculaDisparos.setCelda(row, col, 2);
+                break;
+            }
+        } while (true);
+
+        return new int[] {col, row};
     }
 
     private int numeroAzar(){

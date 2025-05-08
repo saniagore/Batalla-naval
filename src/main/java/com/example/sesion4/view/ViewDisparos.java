@@ -7,6 +7,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import com.example.sesion4.controller.GameDispararController;
+import com.example.sesion4.controller.GameVController;
+
 import java.io.IOException;
 
 
@@ -37,5 +39,9 @@ public class ViewDisparos extends Stage {
 
     public GameDispararController getController(){
         return gameController;
+    }
+
+    public void setControllerToController(GameVController controller){
+        gameController.setGameVController(controller);
     }
 }

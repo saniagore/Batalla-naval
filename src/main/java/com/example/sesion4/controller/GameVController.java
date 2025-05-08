@@ -8,11 +8,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.image.ImageView;
 import javafx.util.Pair;
-
 import java.util.ArrayList;
 
 import com.example.sesion4.model.Barco;
 import com.example.sesion4.model.CuadriculaJuego;
+import com.example.sesion4.view.Figuras;
 
 public class GameVController {
     private ArrayList<Barco> barcos = new ArrayList<>();
@@ -20,7 +20,7 @@ public class GameVController {
     private Game view;
     @SuppressWarnings("unused")
     private CuadriculaJuego juego;
-
+    private Figuras figuras;
     @FXML
     private GridPane gridPane;
 
@@ -30,6 +30,7 @@ public class GameVController {
 
     public void setCuadriculaJuego(CuadriculaJuego cuadricula) {
         this.juego = cuadricula;
+        figuras = new Figuras();
         dibujarBarcos();
     }
 
@@ -93,5 +94,21 @@ public class GameVController {
         }
     }
 
-
+    public void disparosEnemigo(int row, int col){
+        switch (juego.getCelda(row, col)) {
+            case 0:
+                juego.setCelda(row, col, 2);
+                figuras.drawX(row, col, gridPane);
+                break;
+            case 1:
+                juego.setCelda(row, col, 2);
+                figuras.drawFlame(row, col, gridPane);
+                break;
+            case 2:
+                disparosEnemigo(row, col);
+                break;
+            default:
+                break;
+        }
+    }
 }

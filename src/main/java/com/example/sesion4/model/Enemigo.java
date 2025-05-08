@@ -19,12 +19,14 @@ public class Enemigo implements EnemigoInterface {
     }
 
     @Override
-    public void realizarAccion() {
+    public int[] realizarAccion() {
         if (esModoDisparo) {
-            enemigoDisparos.disparar();
+            return enemigoDisparos.disparar();
         } else {
             enemigoCuadricula.generarBarcos();
+            return new int[] {-1, -1};
         }
+
     }
 
     @Override

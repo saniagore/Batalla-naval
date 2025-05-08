@@ -317,7 +317,8 @@ public class GameController extends GameVController {
         game.getController().setBarcos(barcos);
         game.getController().setCuadriculaJuego(this.cuadriculaJuego);
 
-        new ViewDisparos();
+        ViewDisparos gameViewDisparos = new ViewDisparos();
+        gameViewDisparos.setControllerToController(game.getController());
 
 
         Stage currentStage = (Stage) gridPane.getScene().getWindow();

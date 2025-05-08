@@ -15,7 +15,7 @@ public class GameDispararController {
     private ViewDisparos view;
     private Enemigo enemigo;
     private Figuras figuras;
-
+    private GameVController gameVController;
     @FXML
     private GridPane gridPane;
 
@@ -54,10 +54,16 @@ public class GameDispararController {
                     case 0:
                         figuras.drawX(row, col, gridPane);
                         enemigo.getCuadriculaEnemigo().getCuadriculaBarcos().setCelda(row-1, col-1, 2);
+                        
+                        int [] coordenadas = enemigo.realizarAccion();
+                        int rowS = coordenadas[0];
+                        int colS = coordenadas[1];
+                        gameVController.disparosEnemigo(rowS, colS);
                         break;
                     case 1:
                         figuras.drawFlame(row, col, gridPane);
                         enemigo.getCuadriculaEnemigo().getCuadriculaBarcos().setCelda(row-1, col-1, 2);
+                        
                         break;
                     case 2:
                         PopupWindow.showInfoWindow("Cuidado!", "Ya has disparado en esta celda");
@@ -69,5 +75,9 @@ public class GameDispararController {
             default:
                 break;
         }
+    }
+
+    public void setGameVController(GameVController controller){
+        this.gameVController = controller;
     }
 }
