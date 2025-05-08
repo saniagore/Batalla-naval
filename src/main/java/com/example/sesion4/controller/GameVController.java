@@ -95,14 +95,17 @@ public class GameVController {
     }
 
     public void disparosEnemigo(int row, int col){
+        juego.imprimirCuadricula();
         switch (juego.getCelda(row, col)) {
             case 0:
                 juego.setCelda(row, col, 2);
-                figuras.drawX(row, col, gridPane);
+                figuras.drawX(row+1, col+1, gridPane);
+                juego.imprimirCuadricula();
                 break;
             case 1:
                 juego.setCelda(row, col, 2);
-                figuras.drawFlame(row, col, gridPane);
+                figuras.drawFlame(row+1, col+1, gridPane);
+                juego.imprimirCuadricula();
                 break;
             case 2:
                 disparosEnemigo(row, col);
