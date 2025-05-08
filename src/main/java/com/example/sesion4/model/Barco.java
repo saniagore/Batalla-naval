@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Barco {
     private String nombre;
     private ArrayList<Pair<Integer, Integer>> posiciones = new ArrayList<>();
+    Boolean isHorizontal;
 
     public Barco(String nombre) {
         this.nombre = nombre;
@@ -19,5 +20,11 @@ public class Barco {
     }
     public String getNombre(){
         return nombre;
+    }
+    public void setOrientacion(Boolean isHorizontal){
+        this.isHorizontal = isHorizontal;
+    }
+    public Boolean getOrientacion(){
+        return isHorizontal;
     }
 }

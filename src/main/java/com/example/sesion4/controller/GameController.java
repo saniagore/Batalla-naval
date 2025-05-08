@@ -1,6 +1,8 @@
 package com.example.sesion4.controller;
 
+import com.example.sesion4.view.Game;
 import com.example.sesion4.view.PopupWindow;
+import com.example.sesion4.view.ViewDisparos;
 import com.example.sesion4.view.GameV;
 import com.example.sesion4.model.CuadriculaJuego;
 import com.example.sesion4.model.Barco;
@@ -10,13 +12,14 @@ import java.util.Map;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.Point2D;
 
 import java.util.ArrayList;
+import javafx.util.Pair;
 
-
-public class GameController {
+public class GameController extends GameVController {
     @SuppressWarnings("unused")
     private GameV view;
     @SuppressWarnings("unused")
@@ -60,6 +63,7 @@ public class GameController {
 
         setupCellClickHandlers();
         setupShipClickHandlers();
+
     }
 
     // CELDAS GRIDPANE
@@ -81,20 +85,23 @@ public class GameController {
     private void handleCellClick(MouseEvent event, int row, int col) {
         switch (event.getButton()) {
             case PRIMARY:
-
                 switch (selectedShip) {
                     case "fragatas":
                         try{
                             if (cantFragatas == 4)throw new Exception("Cantidad de fragatas maxima alcanzada");
                             barcos.addLast(new Barco(selectedShip));
                             barcos.get(barcos.size() - 1).agregarPosicion(row, col);
+                            
+                            // coloca la imagen aqui
                             Pane clickedPane = (Pane) event.getSource();
-                            clickedPane.setStyle("-fx-background-color: black;");
+                            clickedPane.setStyle("-fx-background-color: linear-gradient(to bottom right,rgb(123, 149, 253),rgb(42, 10, 246),rgb(46, 205, 244))");
+
                             if(cuadriculaJuego.getCelda(row-1, col-1)==1){
                                 barcos.removeLast();
                                 throw new Exception("Estas intentado colocar un barco sobre otro");
                             }
                             cuadriculaJuego.setCelda(row-1, col-1, 1);
+                            asignarOrientacion();
                             cantFragatas++;
                         }catch(Exception e){
                             if (e.getMessage().equals("Cantidad de fragatas máxima alcanzada")) {
@@ -112,6 +119,7 @@ public class GameController {
                             if (cantDestructores == 3)throw new Exception("Cantidad de destructores maxima alcanzada");
                             barcos.addLast(new Barco(selectedShip));
                             asignarValores(2, row, col);
+                            asignarOrientacion();
                             cantDestructores++;
                         }catch(Exception e){
                             if(e.getMessage().equals("Estas intentado colocar un barco sobre otro")){
@@ -128,6 +136,7 @@ public class GameController {
                             if (cantSubmarinos == 2) throw new Exception("Cantidad de submarinos maxima alcanzada");
                             barcos.addLast(new Barco(selectedShip));
                             asignarValores(3, row, col);
+                            asignarOrientacion();
                             cantSubmarinos++;
                         }catch(Exception e){
                             if(e.getMessage().equals("Estas intentado colocar un barco sobre otro")){
@@ -145,6 +154,7 @@ public class GameController {
                             if (cantPortaAviones == 1) throw new Exception("Cantidad de porta aviones maxima alcanzada");
                             barcos.addLast(new Barco(selectedShip));
                             asignarValores(4, row, col);
+                            asignarOrientacion();
                             cantPortaAviones++;
                         } catch (Exception e) {
                             if(e.getMessage().equals("Estas intentado colocar un barco sobre otro")){
@@ -161,11 +171,9 @@ public class GameController {
                         PopupWindow.Window("Error", "Seleccione una nave primero para colocar");
                         break;
                 }
-
                 break;
-
             case SECONDARY:
-
+                removerBarco(row, col);
                 break;
 
             default:
@@ -192,6 +200,10 @@ public class GameController {
     }
 
     // --------------------------------------------------------------------------------------------
+
+    public void asignarOrientacion(){
+        barcos.get(barcos.size() - 1).setOrientacion(isHorizontal);
+    }
 
     public void asignarValores(int tamaño, int row, int col) {
         for (int i = 0; i < tamaño; i++) {
@@ -222,7 +234,7 @@ public class GameController {
                 int c = nodeCol == null ? 0 : nodeCol;
                 if (r == newRow && c == newCol && node instanceof Pane) {
                     Pane targetPane = (Pane) node;
-                    targetPane.setStyle("-fx-background-color: black;");
+                    targetPane.setStyle("-fx-background-color: linear-gradient(to bottom right,rgb(123, 149, 253),rgb(42, 10, 246),rgb(46, 205, 244))");
                 }
             });
 
@@ -230,14 +242,87 @@ public class GameController {
     }
 
 
-    public void removerBarco(int row, int col){
+    public void removerBarco(int row, int col) {
+        Boolean isRemove = false;
+        Barco barcoToRemove = null;
+        
+        // Buscar el barco que contiene la posición (row, col)
+        for(Barco barco : barcos) {
+            ArrayList<Pair<Integer, Integer>> posiciones = barco.getPosiciones();
+            for(Pair<Integer, Integer> posicion : posiciones) {
+                int rowPos = posicion.getKey();
+                int colPos = posicion.getValue();
+                if(row == rowPos && col == colPos) {
+                    isRemove = true;
+                    barcoToRemove = barco;
+                    switch (barco.getNombre()) {
+                        case "portaaviones":
+                            cantPortaAviones--;                            
+                            break;
+                        case "submarinos":
+                            cantSubmarinos--;
+                            break;
+                        case "destructores":
+                            cantDestructores--;
+                            break;
+                        case "fragatas":
+                            cantFragatas--;
+                            break;
+                        default:
+                            break;
+                    }
 
+                    break;
+                }
+            }
+            if(isRemove) break;
+        }
+    
+        // Si encontramos el barco, procedemos a removerlo
+        if(isRemove && barcoToRemove != null) {
+            // Remover de la cuadrícula lógica
+            for(Pair<Integer, Integer> posicion : barcoToRemove.getPosiciones()) {
+                int rowPos = posicion.getKey();
+                int colPos = posicion.getValue();
+                cuadriculaJuego.setCelda(rowPos-1, colPos-1, 0);
+                
+                // Actualizar la interfaz gráfica (quitar el color negro)
+                gridPane.getChildren().forEach(node -> {
+                    Integer nodeRow = GridPane.getRowIndex(node);
+                    Integer nodeCol = GridPane.getColumnIndex(node);
+                    int r = nodeRow == null ? 0 : nodeRow;
+                    int c = nodeCol == null ? 0 : nodeCol;
+                    
+                    if (r == rowPos && c == colPos && node instanceof Pane) {
+                        Pane targetPane = (Pane) node;
+                        targetPane.setStyle("");
+                    }
+                });
+            }
+            
+            // Remover el barco de la lista de barcos
+            barcos.remove(barcoToRemove);
+        }
     }
 
 
     @FXML
     public void iniciarJuego() {
-        System.out.println("Iniciando juego...");
+        if(cantDestructores+cantFragatas+cantPortaAviones+cantSubmarinos!=10){
+            PopupWindow.Window("Error", "Debe primero colocar todos los barcos");
+            return;
+        }
+
+        Game game = new Game();
+        game.getController().setBarcos(barcos);
+        game.getController().setCuadriculaJuego(this.cuadriculaJuego);
+
+        new ViewDisparos();
+
+
+        Stage currentStage = (Stage) gridPane.getScene().getWindow();
+        currentStage.close();
+        PopupWindow.showInfoWindow("Batalla naval", "Haga click en la cuadricula vacia para disparar");
     }
 
     @FXML
