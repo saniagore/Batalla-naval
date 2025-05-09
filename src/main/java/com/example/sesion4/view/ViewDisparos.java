@@ -10,9 +10,11 @@ import com.example.sesion4.controller.GameDispararController;
 import com.example.sesion4.controller.GameVController;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 
-public class ViewDisparos extends Stage {
+public class ViewDisparos extends Stage implements Serializable {
+    private Boolean visualizarEnemgos;
     private GameDispararController gameController;
     private Parent root;
 
@@ -43,5 +45,16 @@ public class ViewDisparos extends Stage {
 
     public void setControllerToController(GameVController controller){
         gameController.setGameVController(controller);
+    }
+
+    public Stage getStage(){
+        return this;
+    }
+
+    public void setVisualizar(Boolean visualizar){
+        visualizarEnemgos = visualizar;
+    }
+    public Boolean getVisualizar(){
+        return visualizarEnemgos;
     }
 }

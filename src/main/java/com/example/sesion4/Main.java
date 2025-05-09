@@ -7,7 +7,6 @@ import com.example.sesion4.view.GameV;
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
-        // Crear y mostrar la ventana del juego
         new GameV();
     }
 

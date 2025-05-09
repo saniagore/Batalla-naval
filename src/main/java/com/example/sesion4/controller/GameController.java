@@ -327,6 +327,27 @@ public class GameController extends GameVController {
     }
 
     @FXML
+    public void juegoPrueba(){
+        if(cantDestructores+cantFragatas+cantPortaAviones+cantSubmarinos!=10){
+            PopupWindow.Window("Error", "Debe primero colocar todos los barcos");
+            return;
+        }
+
+        Game game = new Game();
+        game.getController().setBarcos(barcos);
+        game.getController().setCuadriculaJuego(this.cuadriculaJuego);
+
+        ViewDisparos gameViewDisparos = new ViewDisparos();
+        gameViewDisparos.setControllerToController(game.getController());
+        gameViewDisparos.setVisualizar(true);
+        gameViewDisparos.getController().visualizarInterfazEnemiga();
+
+        Stage currentStage = (Stage) gridPane.getScene().getWindow();
+        currentStage.close();
+        PopupWindow.showInfoWindow("Batalla naval", "Haga click en la cuadricula vacia para disparar, este modo podras visualizar la interfaz del enemigo");
+    }
+
+    @FXML
     public void posicion() {
         isHorizontal = !isHorizontal;
     }

@@ -8,9 +8,10 @@ import javafx.stage.Stage;
 
 import com.example.sesion4.controller.GameVController;
 import java.io.IOException;
+import java.io.Serializable;
 
 
-public class Game extends Stage {
+public class Game extends Stage implements Serializable {
     private GameVController gameController;
     private Parent root;
 

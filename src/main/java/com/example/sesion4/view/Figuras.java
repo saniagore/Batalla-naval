@@ -1,5 +1,6 @@
 package com.example.sesion4.view;
 
+import java.io.Serializable;
 import java.util.Random;
 
 import javafx.animation.KeyFrame;
@@ -17,7 +18,7 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.util.Duration;
 
-public class Figuras {
+public class Figuras implements Serializable{
     public void drawFlame(int row, int col, GridPane gridPane) {
         Pane targetPane = null;
         for (javafx.scene.Node node : gridPane.getChildren()) {

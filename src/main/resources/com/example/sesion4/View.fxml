@@ -184,6 +184,7 @@
             <Button fx:id="btnIniciar" layoutX="734.0" layoutY="752.0" onAction="#iniciarJuego" styleClass="boton-estandar" text="Iniciar Juego" />
             <Button fx:id="btnPosicion" layoutX="732.0" layoutY="797.0" onAction="#posicion" prefHeight="34.0" prefWidth="124.0" styleClass="boton-estandar" text="Posicion" />
             <Pane fx:id="portaaviones" layoutX="-38.0" layoutY="853.0" maxHeight="75.0" maxWidth="282.0" minHeight="40" minWidth="160" prefHeight="73.0" prefWidth="275.0" style="-fx-cursor: hand;" styleClass="pane-naves" userData="4" />
+            <Button fx:id="btnprueba" layoutX="731.0" layoutY="706.0" onAction="#juegoPrueba" styleClass="boton-estandar" text="Juego Prueba" />
          </children>
       </AnchorPane>
    </center>

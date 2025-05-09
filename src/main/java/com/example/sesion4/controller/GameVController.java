@@ -1,24 +1,26 @@
 package com.example.sesion4.controller;
 
 import com.example.sesion4.view.Game;
+import com.example.sesion4.view.PopupWindow;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.image.ImageView;
 import javafx.util.Pair;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import com.example.sesion4.model.Barco;
 import com.example.sesion4.model.CuadriculaJuego;
 import com.example.sesion4.view.Figuras;
 
-public class GameVController {
+public class GameVController implements Serializable {
     private ArrayList<Barco> barcos = new ArrayList<>();
-    @SuppressWarnings("unused")
     private Game view;
-    @SuppressWarnings("unused")
     private CuadriculaJuego juego;
     private Figuras figuras;
     @FXML
@@ -95,17 +97,20 @@ public class GameVController {
     }
 
     public void disparosEnemigo(int row, int col){
-        juego.imprimirCuadricula();
         switch (juego.getCelda(row, col)) {
             case 0:
                 juego.setCelda(row, col, 2);
                 figuras.drawX(row+1, col+1, gridPane);
-                juego.imprimirCuadricula();
                 break;
             case 1:
                 juego.setCelda(row, col, 2);
                 figuras.drawFlame(row+1, col+1, gridPane);
-                juego.imprimirCuadricula();
+
+                if(juego.verificarDerrota()){
+                    PopupWindow.showInfoWindow("Has perdido", "El enemigo ha ganado!");
+                    Platform.exit();
+                    System.exit(0);
+                }
                 break;
             case 2:
                 disparosEnemigo(row, col);
@@ -113,5 +118,9 @@ public class GameVController {
             default:
                 break;
         }
+    }
+
+    public Game getView(){
+        return view;
     }
 }

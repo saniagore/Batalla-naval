@@ -1,8 +1,10 @@
 package com.example.sesion4.model;
 import javafx.util.Pair;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Barco {
+public class Barco implements Serializable{
     private String nombre;
     private ArrayList<Pair<Integer, Integer>> posiciones = new ArrayList<>();
     Boolean isHorizontal;
