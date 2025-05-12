@@ -18,12 +18,13 @@ public class ViewDisparos extends Stage implements Serializable {
     private GameDispararController gameController;
     private Parent root;
 
-    public ViewDisparos(){
+    public ViewDisparos(Boolean carga){
         try {
             
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/sesion4/ViewDisparos.fxml"));
             root = loader.load();
             gameController = loader.getController();
+            gameController.setLoaded(carga);
             gameController.setView(this);
             Scene scene = new Scene(root);
             setScene(scene);

@@ -219,4 +219,8 @@ public class GameVController implements Serializable {
     public ArrayList<Barco> getBarcos(){
         return barcos;
     }
+
+    public void setJuegoInicial(CuadriculaJuego juegoInicial){
+        this.juegoInicial = juegoInicial;
+    }
 }

@@ -24,7 +24,8 @@ public class GameDispararController {
     private Enemigo enemigo;
     private Figuras figuras;
     private GameVController gameVController;
-    
+    private Boolean loaded = false;
+    private int tiros = 0;
     @FXML
     private GridPane gridPane;
 
@@ -36,14 +37,14 @@ public class GameDispararController {
         enemigo.realizarAccion();
         enemigo.setModoDisparo(true);
         enemigo.inicializar();
-
         setupCellClickHandlers();
-
+        guardarCuadriculaEnemigoInicial();
         Platform.runLater(() -> {
             try {
                 if (gridPane != null && gridPane.getScene() != null && gridPane.getScene().getWindow() != null) {
                     gridPane.getScene().getWindow().setOnCloseRequest(event -> {
                         saveGame();
+
                         if (gameVController != null) {
                             gameVController.cerrarVentana();
                         }
@@ -56,8 +57,9 @@ public class GameDispararController {
     }
 
     private void setupCellClickHandlers() {
-        if (gridPane == null) return;
-        
+        if (gridPane == null)
+            return;
+
         gridPane.getChildren().forEach(node -> {
             Integer row = GridPane.getRowIndex(node);
             Integer col = GridPane.getColumnIndex(node);
@@ -81,6 +83,7 @@ public class GameDispararController {
 
         switch (event.getButton()) {
             case PRIMARY:
+                tiros++;
                 switch (enemigo.getCuadriculaEnemigo().getCuadriculaBarcos().getCelda(row - 1, col - 1)) {
                     case 0:
                         figuras.drawX(row, col, gridPane);
@@ -147,7 +150,8 @@ public class GameDispararController {
             barcoPane.setPrefHeight(esHorizontal ? cellSize : cellSize * tamaño);
 
             String imagenPath = getImagePath(barco);
-            if (imagenPath == null) continue;
+            if (imagenPath == null)
+                continue;
 
             try {
                 ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(imagenPath)));
@@ -206,24 +210,24 @@ public class GameDispararController {
     public void saveGame() {
         try {
             boolean visualizar = view != null && Boolean.TRUE.equals(view.getVisualizar());
-            
+
             new SaveGameController(
-                gameVController != null ? gameVController.getJuegoInicial() : null,
-                gameVController != null ? gameVController.getJuego() : null,
-                cuadriculaEnemigoInicial,
-                enemigo != null && enemigo.getCuadriculaEnemigo() != null 
-                    ? enemigo.getCuadriculaEnemigo().getCuadriculaBarcos() 
-                    : null,
-                visualizar,
-                gameVController.getBarcos(),
-                enemigo.getCuadriculaEnemigo().getListaBarcos()
-            );
+                    gameVController != null ? gameVController.getJuegoInicial() : null,
+                    gameVController != null ? gameVController.getJuego() : null,
+                    cuadriculaEnemigoInicial,
+                    enemigo != null && enemigo.getCuadriculaEnemigo() != null
+                            ? enemigo.getCuadriculaEnemigo().getCuadriculaBarcos()
+                            : null,
+                    visualizar,
+                    gameVController.getBarcos(),
+                    enemigo.getCuadriculaEnemigo().getListaBarcos());
+
         } catch (Exception e) {
             System.err.println("Error saving game: " + e.getMessage());
             e.printStackTrace();
         }
     }
-    
+
     public GameVController getGameVController() {
         return gameVController;
     }
@@ -232,23 +236,67 @@ public class GameDispararController {
         return cuadriculaEnemigoInicial;
     }
 
+    public void setLoaded(Boolean loaded) {
+        this.loaded = loaded;
+    }
+
     public CuadriculaJuego getCuadriculaEnemigo() {
-        return enemigo != null && enemigo.getCuadriculaEnemigo() != null 
-            ? enemigo.getCuadriculaEnemigo().getCuadriculaBarcos() 
-            : null;
+        return enemigo != null && enemigo.getCuadriculaEnemigo() != null
+                ? enemigo.getCuadriculaEnemigo().getCuadriculaBarcos()
+                : null;
     }
 
     public void setView(ViewDisparos view) {
         this.view = view;
-        if (enemigo != null && enemigo.getCuadriculaEnemigo() != null) {
-            cuadriculaEnemigoInicial = enemigo.getCuadriculaEnemigo().getCuadriculaBarcos();
-        }
-        if (gameVController != null) {
-            gameVController.setGameDispararController(this);
-        }
     }
 
     public void setGameVController(GameVController controller) {
         this.gameVController = controller;
+    }
+
+    public Enemigo getEnemigo() {
+        return enemigo;
+    }
+
+    public void setCuadriculaEnemigoInicial(CuadriculaJuego cuadriculaEnemigoInicial) {
+        this.cuadriculaEnemigoInicial = cuadriculaEnemigoInicial;
+    }
+
+    public void dibujarFigurasHits() {
+        if (cuadriculaEnemigoInicial == null || enemigo == null ||
+                enemigo.getCuadriculaEnemigo() == null || gridPane == null) {
+            System.err.println("Error: Objetos no inicializados.");
+            return;
+        }
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                int celdaInicial = cuadriculaEnemigoInicial.getCelda(i, j);
+                int celdaActual = enemigo.getCuadriculaEnemigo().getCuadriculaBarcos().getCelda(i, j);
+                int gridRow = i + 1;
+                int gridCol = j + 1;
+
+                if (celdaInicial == 0 && celdaActual == 2) {
+                    figuras.drawX(gridRow, gridCol, gridPane);
+                } else if (celdaInicial == 1 && celdaActual == 2) {
+                    figuras.drawFlame(gridRow, gridCol, gridPane);
+                }
+            }
+        }
+    }
+
+    public void guardarCuadriculaEnemigoInicial(){
+        if (loaded==false && tiros == 0) {
+            cuadriculaEnemigoInicial = new CuadriculaJuego();
+            if (enemigo != null && enemigo.getCuadriculaEnemigo() != null) {
+                
+                for(int i = 0; i<10;i++){
+                    for(int j=0; j<10; j++){
+                        int valor = enemigo.getCuadriculaEnemigo().getCuadriculaBarcos().getCelda(j, i);
+                        cuadriculaEnemigoInicial.setCelda(j, i, valor);
+                    }
+                }
+            }
+        }
     }
 }

@@ -12,7 +12,6 @@ import com.example.sesion4.utils.SaveGame;
 import com.example.sesion4.view.PopupWindow;
 
 public class SaveGameController {
-    @SuppressWarnings("unused")
     private SaveGame juego;
 
     public SaveGameController(CuadriculaJuego juego,CuadriculaJuego juegoActual, CuadriculaJuego juegoEnemigo, CuadriculaJuego juegoEnemigoActual, Boolean mostrarInterfazEnemigo,ArrayList<Barco> barcos, ArrayList<Barco> barcosEnemigos){
@@ -21,7 +20,7 @@ public class SaveGameController {
             
             FileOutputStream fileOutputStream = new FileOutputStream("savedgame.txt");
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-            objectOutputStream.writeObject(juego);
+            objectOutputStream.writeObject(this.juego);
             objectOutputStream.close();
             PopupWindow.showInfoWindow("Exito", "El juego se ha guardado de manera exitosa.");
         }catch(IOException e){

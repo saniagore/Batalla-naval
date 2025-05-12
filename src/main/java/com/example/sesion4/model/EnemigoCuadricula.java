@@ -100,4 +100,12 @@ public class EnemigoCuadricula {
     public void setCelda(int row, int col, int valor){
         cuadriculaBarcos.setCelda(row, col, valor);   
     }
+
+    public void setListaBarcos(ArrayList<Barco> listaBarcos) {
+        this.listaBarcos = listaBarcos;
+    }
+
+    public void setCuadriculaBarcos(CuadriculaJuego cuadriculaBarcos) {
+        this.cuadriculaBarcos = cuadriculaBarcos;
+    }
 }

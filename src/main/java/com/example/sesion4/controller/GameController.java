@@ -317,7 +317,7 @@ public class GameController extends GameVController {
         game.getController().setBarcos(barcos);
         game.getController().setCuadriculaJuego(this.cuadriculaJuego);
 
-        ViewDisparos gameViewDisparos = new ViewDisparos();
+        ViewDisparos gameViewDisparos = new ViewDisparos(false);
         gameViewDisparos.setControllerToController(game.getController());
 
 
@@ -337,7 +337,7 @@ public class GameController extends GameVController {
         game.getController().setBarcos(barcos);
         game.getController().setCuadriculaJuego(this.cuadriculaJuego);
 
-        ViewDisparos gameViewDisparos = new ViewDisparos();
+        ViewDisparos gameViewDisparos = new ViewDisparos(false);
         gameViewDisparos.setControllerToController(game.getController());
         gameViewDisparos.setVisualizar(true);
         gameViewDisparos.getController().visualizarInterfazEnemiga();
