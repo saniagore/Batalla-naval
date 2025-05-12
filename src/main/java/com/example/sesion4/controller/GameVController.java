@@ -19,26 +19,14 @@ import com.example.sesion4.model.CuadriculaJuego;
 import com.example.sesion4.view.Figuras;
 
 public class GameVController implements Serializable {
+    private GameDispararController gameDispararController;
     private ArrayList<Barco> barcos = new ArrayList<>();
     private Game view;
     private CuadriculaJuego juego;
+    private CuadriculaJuego juegoInicial;
     private Figuras figuras;
     @FXML
     private GridPane gridPane;
-
-    public void setView(Game view) {
-        this.view = view;
-    }
-
-    public void setCuadriculaJuego(CuadriculaJuego cuadricula) {
-        this.juego = cuadricula;
-        figuras = new Figuras();
-        dibujarBarcos();
-    }
-
-    public void setBarcos(ArrayList<Barco> barcos) {
-        this.barcos = barcos;
-    }
 
     private void dibujarBarcos() {
         if (barcos == null || gridPane == null)
@@ -122,5 +110,44 @@ public class GameVController implements Serializable {
 
     public Game getView(){
         return view;
+    }
+
+    public CuadriculaJuego getJuegoInicial(){
+        return juegoInicial;
+    }
+
+    public CuadriculaJuego getJuego(){
+        return juego;
+    }
+
+    public void setGameDispararController(GameDispararController gameDispararController){
+        this.gameDispararController = gameDispararController;
+    }
+
+    public GameDispararController getGameDispararController(){
+        return gameDispararController;
+    }
+
+    public void setView(Game view) {
+        this.view = view;
+
+        if (view != null && view.getScene() != null && view.getScene().getWindow() != null) {
+        view.getScene().getWindow().setOnCloseRequest(event -> {
+            // Aquí llamas a tu función personalizada
+            // Si quieres prevenir el cierre (opcional):
+            // event.consume();
+        });
+    }
+    }
+
+    public void setCuadriculaJuego(CuadriculaJuego cuadricula) {
+        this.juego = cuadricula;
+        this.juegoInicial = cuadricula;
+        figuras = new Figuras();
+        dibujarBarcos();
+    }
+
+    public void setBarcos(ArrayList<Barco> barcos) {
+        this.barcos = barcos;
     }
 }

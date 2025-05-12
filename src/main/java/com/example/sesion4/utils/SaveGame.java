@@ -1,43 +1,42 @@
 package com.example.sesion4.utils;
 
+import com.example.sesion4.model.CuadriculaJuego;
+
 import java.io.Serializable;
 
-import com.example.sesion4.controller.GameDispararController;
-import com.example.sesion4.controller.GameVController;
-import com.example.sesion4.view.ViewDisparos;
-import com.example.sesion4.view.Game;
-
-public class SaveGame implements Serializable {
-    private GameDispararController gameDispararController;
-    private GameVController gameVController;
-    private Game game;
-    private ViewDisparos viewDisparos;
-
-    public void setGameDispararController(GameDispararController gameDispararController) {
-        this.gameDispararController = gameDispararController;
-    }
-    public void setGameVController(GameVController gameVController) {
-        this.gameVController = gameVController;
-    }
-    public void setGame(Game game) {
-        this.game = game;
-    }
-    public void setViewDisparos(ViewDisparos viewDisparos) {
-        this.viewDisparos = viewDisparos;
-    }
-
-    public GameDispararController getGameDispararController() {
-        return gameDispararController;
-    }
-    public GameVController getGameVController() {
-        return gameVController;
-    }
-    public Game getGame() {
-        return game;
-    }
-    public ViewDisparos getViewDisparos() {
-        return viewDisparos;
-    }
+public class SaveGame implements Serializable{
+    private Boolean mostrarInterfazEnemiga;
+    private CuadriculaJuego cuadriculaInicial;
+    private CuadriculaJuego cuadriculaActual;
+    private CuadriculaJuego cuadriculaEnemigoInicial;
+    private CuadriculaJuego cuadriculaEnemigoActual;
 
 
+    public SaveGame(CuadriculaJuego cuadriculaInicial, CuadriculaJuego cuadriculaActual, CuadriculaJuego cuadriculaEnemigoInicial, CuadriculaJuego cuadriculaEnemigoActual, Boolean mostrarInterfazEnemiga){
+        this.cuadriculaInicial = cuadriculaInicial;
+        this.cuadriculaActual = cuadriculaActual;
+        this.cuadriculaEnemigoInicial = cuadriculaEnemigoInicial;
+        this.cuadriculaEnemigoActual = cuadriculaEnemigoActual;
+        this.mostrarInterfazEnemiga = mostrarInterfazEnemiga;
+    }
+
+    public CuadriculaJuego getCuadriculaInicial() {
+        return cuadriculaInicial;
+    }
+
+    public CuadriculaJuego getCuadriculaActual() {
+        return cuadriculaActual;
+    }
+
+    public CuadriculaJuego getCuadriculaEnemigoInicial() {
+        return cuadriculaEnemigoInicial;
+    }
+
+    public CuadriculaJuego getCuadriculaEnemigoActual() {
+        return cuadriculaEnemigoActual;
+    }
+
+    public Boolean getMostrarInterfazEnemiga(){
+        return mostrarInterfazEnemiga;
+    }
 }

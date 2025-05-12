@@ -12,39 +12,34 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 
 import com.example.sesion4.model.Barco;
+import com.example.sesion4.model.CuadriculaJuego;
 import com.example.sesion4.model.Enemigo;
 import com.example.sesion4.view.PopupWindow;
 import com.example.sesion4.view.ViewDisparos;
 import com.example.sesion4.view.Figuras;
 
 public class GameDispararController {
-    @SuppressWarnings("unused")
+    private CuadriculaJuego cuadriculaEnemigoInicial;
     private ViewDisparos view;
     private Enemigo enemigo;
     private Figuras figuras;
     private GameVController gameVController;
-    private ControllerSave controllerSave;
     @FXML
     private GridPane gridPane;
 
     @FXML
     public void initialize() {
-        controllerSave = new ControllerSave();
         figuras = new Figuras();
         enemigo = new Enemigo(false);
         enemigo.inicializar();
         enemigo.realizarAccion();
         enemigo.setModoDisparo(true);
         enemigo.inicializar();
+
         setupCellClickHandlers();
 
-    }
-
-    public void setView(ViewDisparos view) {
-        this.view = view;
-
-        view.getStage().setOnCloseRequest(event -> {
-            this.Guardar();
+        gridPane.getScene().getWindow().setOnCloseRequest(event -> {
+            // Aquí llamas a tu función personalizada
         });
     }
 
@@ -96,28 +91,6 @@ public class GameDispararController {
                 break;
             default:
                 break;
-        }
-    }
-
-    public void setGameVController(GameVController controller) {
-        this.gameVController = controller;
-    }
-
-    public void Guardar() {
-        controllerSave.saveGame(enemigo);
-        Platform.exit();
-        System.exit(0);
-    }
-    
-    public void cargarPartida() {
-        Enemigo enemigoCargado = new ControllerLoad().loadGame();
-        if (enemigoCargado != null) {
-            this.enemigo = enemigoCargado;
-            // Reconstruir la vista (usar tu lógica existente)
-        } else {
-            // Iniciar nueva partida
-            enemigo = new Enemigo(false);
-            enemigo.inicializar();
         }
     }
 
@@ -183,5 +156,27 @@ public class GameDispararController {
 
             gridPane.getChildren().add(barcoPane);
         }
+    }
+    
+    public GameVController getGameVController(){
+        return gameVController;
+    }
+
+    public CuadriculaJuego getCuadriculaEnemigoInicial(){
+        return cuadriculaEnemigoInicial;
+    }
+
+    public CuadriculaJuego getCuadriculaEnemigo(){
+        return enemigo.getCuadriculaEnemigo().getCuadriculaBarcos();
+    }
+
+    public void setView(ViewDisparos view) {
+        this.view = view;
+        cuadriculaEnemigoInicial =  enemigo.getCuadriculaEnemigo().getCuadriculaBarcos();
+        gameVController.setGameDispararController(this);
+    }
+
+    public void setGameVController(GameVController controller) {
+        this.gameVController = controller;
     }
 }
