@@ -2,8 +2,6 @@ package com.example.sesion4.controller;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -135,64 +133,11 @@ public class GameDispararController {
             if (posiciones == null || posiciones.isEmpty()) {
                 continue;
             }
-            cuadriculaEnemigoInicial.imprimirCuadricula();
+
+            int startRow = 1 + posiciones.get(0).getKey();
+            int startCol = 1 + posiciones.get(0).getValue();
             int tamaño = posiciones.size();
-            int rowInicial = 2 + posiciones.get(0).getKey();
-            int colInicial = 2 + posiciones.get(0).getValue();
-            int rowFinal = 2 + posiciones.get(tamaño - 1).getKey();
-            @SuppressWarnings("unused")
-            int colFinal = 2 + posiciones.get(tamaño - 1).getValue();
-
-            boolean esHorizontal = rowInicial == rowFinal;
-            double cellSize = 69;
-            Pane barcoPane = new Pane();
-            barcoPane.setPrefWidth(esHorizontal ? cellSize * tamaño : cellSize);
-            barcoPane.setPrefHeight(esHorizontal ? cellSize : cellSize * tamaño);
-
-            String imagenPath = getImagePath(barco);
-            if (imagenPath == null)
-                continue;
-
-            try {
-                ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(imagenPath)));
-                imageView.setPreserveRatio(false);
-                imageView.setFitWidth(barcoPane.getPrefWidth());
-                imageView.setFitHeight(barcoPane.getPrefHeight());
-                barcoPane.getChildren().add(imageView);
-                GridPane.setRowIndex(barcoPane, rowInicial - 1);
-                GridPane.setColumnIndex(barcoPane, colInicial - 1);
-                GridPane.setRowSpan(barcoPane, esHorizontal ? 1 : tamaño);
-                GridPane.setColumnSpan(barcoPane, esHorizontal ? tamaño : 1);
-
-                gridPane.getChildren().add(barcoPane);
-            } catch (Exception e) {
-                System.err.println("Error loading image: " + imagenPath);
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private String getImagePath(Barco barco) {
-        if (barco == null || barco.getNombre() == null) {
-            return null;
-        }
-
-        if (barco.getOrientacion()) {
-            return switch (barco.getNombre()) {
-                case "fragatas" -> "/com/example/sesion4/fragatas.png";
-                case "destructores" -> "/com/example/sesion4/destructor.png";
-                case "submarinos" -> "/com/example/sesion4/submarino.png";
-                case "portaaviones" -> "/com/example/sesion4/porta-aviones.png";
-                default -> null;
-            };
-        } else {
-            return switch (barco.getNombre()) {
-                case "fragatas" -> "/com/example/sesion4/fragatas-vertical.png";
-                case "destructores" -> "/com/example/sesion4/destructor-vertical.png";
-                case "submarinos" -> "/com/example/sesion4/submarino-vertical.png";
-                case "portaaviones" -> "/com/example/sesion4/porta-aviones-vertical.png";
-                default -> null;
-            };
+            figuras.drawBarco(startRow, startCol, gridPane, barco.getNombre(), barco.getOrientacion(), tamaño);
         }
     }
 
@@ -285,13 +230,13 @@ public class GameDispararController {
         }
     }
 
-    public void guardarCuadriculaEnemigoInicial(){
-        if (loaded==false && tiros == 0) {
+    public void guardarCuadriculaEnemigoInicial() {
+        if (loaded == false && tiros == 0) {
             cuadriculaEnemigoInicial = new CuadriculaJuego();
             if (enemigo != null && enemigo.getCuadriculaEnemigo() != null) {
-                
-                for(int i = 0; i<10;i++){
-                    for(int j=0; j<10; j++){
+
+                for (int i = 0; i < 10; i++) {
+                    for (int j = 0; j < 10; j++) {
                         int valor = enemigo.getCuadriculaEnemigo().getCuadriculaBarcos().getCelda(j, i);
                         cuadriculaEnemigoInicial.setCelda(j, i, valor);
                     }

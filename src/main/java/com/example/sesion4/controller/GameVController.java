@@ -4,14 +4,10 @@ import com.example.sesion4.view.Game;
 import com.example.sesion4.view.PopupWindow;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.image.ImageView;
 import javafx.util.Pair;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import com.example.sesion4.model.Barco;
 import com.example.sesion4.model.CuadriculaJuego;
@@ -19,7 +15,6 @@ import com.example.sesion4.view.Figuras;
 
 public class GameVController implements Serializable {
     private static final long serialVersionUID = 1L;
-    private static final double CELL_SIZE = 69.0;
 
     private Boolean loaded;
     private transient GameDispararController gameDispararController;
@@ -32,93 +27,23 @@ public class GameVController implements Serializable {
     @FXML
     private transient GridPane gridPane;
 
-    private void dibujarBarcos() {
-        if (gridPane == null || barcos == null || barcos.isEmpty()) {
+    public void dibujarBarcos() {
+        if (barcos == null) {
             return;
         }
+        for (Barco barco : barcos) {
+            ArrayList<Pair<Integer, Integer>> posiciones = barco.getPosiciones();
 
-        gridPane.getChildren().removeIf(node -> node instanceof Pane &&
-                node.getProperties().containsKey("shipPane"));
-
-        barcos.stream()
-                .filter(Objects::nonNull)
-                .forEach(this::dibujarBarco);
-    }
-
-    private void dibujarBarco(Barco barco) {
-        List<Pair<Integer, Integer>> posiciones = barco.getPosiciones();
-        if (posiciones == null || posiciones.isEmpty()) {
-            return;
-        }
-
-        int tamaño = posiciones.size();
-        int rowInicial = 1 + posiciones.get(0).getKey();
-        int colInicial = 1 + posiciones.get(0).getValue();
-        boolean esHorizontal = rowInicial == (1 + posiciones.get(tamaño - 1).getKey());
-
-        Pane barcoPane = createShipPane(barco, tamaño, esHorizontal);
-        ImageView imageView = createShipImageView(barco, barcoPane.getPrefWidth(), barcoPane.getPrefHeight());
-
-        if (imageView != null) {
-            barcoPane.getChildren().add(imageView);
-            positionShipInGrid(barcoPane, rowInicial, colInicial, tamaño, esHorizontal);
-            barcoPane.getProperties().put("shipPane", true);
-            gridPane.getChildren().add(barcoPane);
-        }
-    }
-
-    private Pane createShipPane(Barco barco, int tamaño, boolean esHorizontal) {
-        Pane pane = new Pane();
-        pane.setPrefWidth(esHorizontal ? CELL_SIZE * tamaño : CELL_SIZE);
-        pane.setPrefHeight(esHorizontal ? CELL_SIZE : CELL_SIZE * tamaño);
-        return pane;
-    }
-
-    private ImageView createShipImageView(Barco barco, double width, double height) {
-        String imagenPath = getImagePath(barco);
-        if (imagenPath == null)
-            return null;
-
-        try {
-            Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagenPath)));
-            if (image.isError()) {
-                throw new RuntimeException("Failed to load image: " + imagenPath);
+            if (posiciones == null || posiciones.isEmpty()) {
+                continue;
             }
-
-            ImageView imageView = new ImageView(image);
-            imageView.setPreserveRatio(false);
-            imageView.setFitWidth(width);
-            imageView.setFitHeight(height);
-            return imageView;
-        } catch (Exception e) {
-            System.err.println("Error loading ship image: " + e.getMessage());
-            return null;
+            int startRow =  posiciones.get(0).getKey();
+            int startCol =  posiciones.get(0).getValue();
+            int tamaño = posiciones.size();
+            figuras.drawBarco(startRow, startCol, gridPane, barco.getNombre(), barco.getOrientacion(), tamaño);
         }
     }
 
-    private void positionShipInGrid(Pane barcoPane, int row, int col, int tamaño, boolean esHorizontal) {
-        GridPane.setRowIndex(barcoPane, row - 1);
-        GridPane.setColumnIndex(barcoPane, col - 1);
-        GridPane.setRowSpan(barcoPane, esHorizontal ? 1 : tamaño);
-        GridPane.setColumnSpan(barcoPane, esHorizontal ? tamaño : 1);
-    }
-
-    private String getImagePath(Barco barco) {
-        if (barco == null || barco.getNombre() == null) {
-            return null;
-        }
-
-        String basePath = "/com/example/sesion4/";
-        String orientationSuffix = barco.getOrientacion() ? "" : "-vertical";
-
-        return switch (barco.getNombre()) {
-            case "fragatas" -> basePath + "fragatas" + orientationSuffix + ".png";
-            case "destructores" -> basePath + "destructor" + orientationSuffix + ".png";
-            case "submarinos" -> basePath + "submarino" + orientationSuffix + ".png";
-            case "portaaviones" -> basePath + "porta-aviones" + orientationSuffix + ".png";
-            default -> null;
-        };
-    }
 
     public void disparosEnemigo(int row, int col) {
         if (juego == null || gridPane == null || figuras == null) {
