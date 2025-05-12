@@ -1,6 +1,8 @@
 package com.example.sesion4.model;
 
-public class CuadriculaJuego {
+import java.io.Serializable;
+
+public class CuadriculaJuego implements Serializable{
     private static final int FILAS = 10;
     private static final int COLUMNAS = 10;
     private int[][] tablero;    

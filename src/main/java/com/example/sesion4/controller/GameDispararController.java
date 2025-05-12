@@ -24,6 +24,7 @@ public class GameDispararController {
     private Enemigo enemigo;
     private Figuras figuras;
     private GameVController gameVController;
+    
     @FXML
     private GridPane gridPane;
 
@@ -38,12 +39,25 @@ public class GameDispararController {
 
         setupCellClickHandlers();
 
-        gridPane.getScene().getWindow().setOnCloseRequest(event -> {
-            // Aquí llamas a tu función personalizada
+        Platform.runLater(() -> {
+            try {
+                if (gridPane != null && gridPane.getScene() != null && gridPane.getScene().getWindow() != null) {
+                    gridPane.getScene().getWindow().setOnCloseRequest(event -> {
+                        saveGame();
+                        if (gameVController != null) {
+                            gameVController.cerrarVentana();
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                System.err.println("Error setting up window close handler: " + e.getMessage());
+            }
         });
     }
 
     private void setupCellClickHandlers() {
+        if (gridPane == null) return;
+        
         gridPane.getChildren().forEach(node -> {
             Integer row = GridPane.getRowIndex(node);
             Integer col = GridPane.getColumnIndex(node);
@@ -57,6 +71,10 @@ public class GameDispararController {
     }
 
     private void handleCellClick(MouseEvent event, int row, int col) {
+        if (enemigo == null || enemigo.getCuadriculaEnemigo() == null || gameVController == null) {
+            return;
+        }
+
         int[] coordenadas = enemigo.realizarAccion();
         int rowS = coordenadas[0];
         int colS = coordenadas[1];
@@ -68,19 +86,22 @@ public class GameDispararController {
                         figuras.drawX(row, col, gridPane);
                         enemigo.getCuadriculaEnemigo().getCuadriculaBarcos().setCelda(row - 1, col - 1, 2);
 
-                        gameVController.disparosEnemigo(rowS, colS);
+                        if (gameVController != null) {
+                            gameVController.disparosEnemigo(rowS, colS);
+                        }
                         break;
                     case 1:
                         figuras.drawFlame(row, col, gridPane);
                         enemigo.getCuadriculaEnemigo().getCuadriculaBarcos().setCelda(row - 1, col - 1, 2);
 
-                        gameVController.disparosEnemigo(rowS, colS);
+                        if (gameVController != null) {
+                            gameVController.disparosEnemigo(rowS, colS);
+                        }
                         if (enemigo.getCuadriculaEnemigo().getCuadriculaBarcos().verificarDerrota()) {
                             PopupWindow.showInfoWindow("Has ganado", "Has destruido todos los barcos enemigos!");
                             Platform.exit();
                             System.exit(0);
                         }
-
                         break;
                     case 2:
                         PopupWindow.showInfoWindow("Cuidado!", "Ya has disparado en esta celda");
@@ -94,30 +115,30 @@ public class GameDispararController {
         }
     }
 
-    public void visualizarInterfazEnemiga(){
-        if(view.getVisualizar()){
-            dibujarBarcos();
-        }
-    }
-
     private void dibujarBarcos() {
+        if (enemigo == null || enemigo.getCuadriculaEnemigo() == null || gridPane == null) {
+            return;
+        }
+
         ArrayList<Barco> barcos = enemigo.getCuadriculaEnemigo().getListaBarcos();
 
-        if (barcos == null || gridPane == null)
+        if (barcos == null) {
             return;
+        }
 
         for (Barco barco : barcos) {
             ArrayList<Pair<Integer, Integer>> posiciones = barco.getPosiciones();
 
-            if (posiciones.isEmpty())
+            if (posiciones == null || posiciones.isEmpty()) {
                 continue;
+            }
 
             int tamaño = posiciones.size();
-            int rowInicial = 1+ posiciones.get(0).getKey();
-            int colInicial = 1+ posiciones.get(0).getValue();
-            int rowFinal = 1+posiciones.get(tamaño - 1).getKey();
+            int rowInicial = 1 + posiciones.get(0).getKey();
+            int colInicial = 1 + posiciones.get(0).getValue();
+            int rowFinal = 1 + posiciones.get(tamaño - 1).getKey();
             @SuppressWarnings("unused")
-            int colFinal = 1+posiciones.get(tamaño - 1).getValue();
+            int colFinal = 1 + posiciones.get(tamaño - 1).getValue();
 
             boolean esHorizontal = rowInicial == rowFinal;
             double cellSize = 69;
@@ -125,55 +146,106 @@ public class GameDispararController {
             barcoPane.setPrefWidth(esHorizontal ? cellSize * tamaño : cellSize);
             barcoPane.setPrefHeight(esHorizontal ? cellSize : cellSize * tamaño);
 
-            String imagenPath;
-            if(barco.getOrientacion()){
-                imagenPath = switch (barco.getNombre()) {
-                    case "fragatas" -> "/com/example/sesion4/fragatas.png";
-                    case "destructores" -> "/com/example/sesion4/destructor.png";
-                    case "submarinos" -> "/com/example/sesion4/submarino.png";
-                    case "portaaviones" -> "/com/example/sesion4/porta-aviones.png";
-                    default -> null;
-                };
-            }else{
-                imagenPath = switch (barco.getNombre()) {
-                    case "fragatas" -> "/com/example/sesion4/fragatas-vertical.png";
-                    case "destructores" -> "/com/example/sesion4/destructor-vertical.png";
-                    case "submarinos" -> "/com/example/sesion4/submarino-vertical.png";
-                    case "portaaviones" -> "/com/example/sesion4/porta-aviones-vertical.png";
-                    default -> null;
-                };
+            String imagenPath = getImagePath(barco);
+            if (imagenPath == null) continue;
+
+            try {
+                ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(imagenPath)));
+                imageView.setPreserveRatio(false);
+                imageView.setFitWidth(barcoPane.getPrefWidth());
+                imageView.setFitHeight(barcoPane.getPrefHeight());
+                barcoPane.getChildren().add(imageView);
+                GridPane.setRowIndex(barcoPane, rowInicial - 1);
+                GridPane.setColumnIndex(barcoPane, colInicial - 1);
+                GridPane.setRowSpan(barcoPane, esHorizontal ? 1 : tamaño);
+                GridPane.setColumnSpan(barcoPane, esHorizontal ? tamaño : 1);
+
+                gridPane.getChildren().add(barcoPane);
+            } catch (Exception e) {
+                System.err.println("Error loading image: " + imagenPath);
+                e.printStackTrace();
             }
+        }
+    }
 
-            ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(imagenPath)));
-            imageView.setPreserveRatio(false);
-            imageView.setFitWidth(barcoPane.getPrefWidth());
-            imageView.setFitHeight(barcoPane.getPrefHeight());
-            barcoPane.getChildren().add(imageView);
-            GridPane.setRowIndex(barcoPane, rowInicial - 1);
-            GridPane.setColumnIndex(barcoPane, colInicial - 1);
-            GridPane.setRowSpan(barcoPane, esHorizontal ? 1 : tamaño);
-            GridPane.setColumnSpan(barcoPane, esHorizontal ? tamaño : 1);
+    private String getImagePath(Barco barco) {
+        if (barco == null || barco.getNombre() == null) {
+            return null;
+        }
 
-            gridPane.getChildren().add(barcoPane);
+        if (barco.getOrientacion()) {
+            return switch (barco.getNombre()) {
+                case "fragatas" -> "/com/example/sesion4/fragatas.png";
+                case "destructores" -> "/com/example/sesion4/destructor.png";
+                case "submarinos" -> "/com/example/sesion4/submarino.png";
+                case "portaaviones" -> "/com/example/sesion4/porta-aviones.png";
+                default -> null;
+            };
+        } else {
+            return switch (barco.getNombre()) {
+                case "fragatas" -> "/com/example/sesion4/fragatas-vertical.png";
+                case "destructores" -> "/com/example/sesion4/destructor-vertical.png";
+                case "submarinos" -> "/com/example/sesion4/submarino-vertical.png";
+                case "portaaviones" -> "/com/example/sesion4/porta-aviones-vertical.png";
+                default -> null;
+            };
+        }
+    }
+
+    public void cerrarVentana() {
+        Platform.exit();
+        System.exit(0);
+    }
+
+    public void visualizarInterfazEnemiga() {
+        if (view != null && view.getVisualizar()) {
+            dibujarBarcos();
+        }
+    }
+
+    public void saveGame() {
+        try {
+            boolean visualizar = view != null && Boolean.TRUE.equals(view.getVisualizar());
+            
+            new SaveGameController(
+                gameVController != null ? gameVController.getJuegoInicial() : null,
+                gameVController != null ? gameVController.getJuego() : null,
+                cuadriculaEnemigoInicial,
+                enemigo != null && enemigo.getCuadriculaEnemigo() != null 
+                    ? enemigo.getCuadriculaEnemigo().getCuadriculaBarcos() 
+                    : null,
+                visualizar,
+                gameVController.getBarcos(),
+                enemigo.getCuadriculaEnemigo().getListaBarcos()
+            );
+        } catch (Exception e) {
+            System.err.println("Error saving game: " + e.getMessage());
+            e.printStackTrace();
         }
     }
     
-    public GameVController getGameVController(){
+    public GameVController getGameVController() {
         return gameVController;
     }
 
-    public CuadriculaJuego getCuadriculaEnemigoInicial(){
+    public CuadriculaJuego getCuadriculaEnemigoInicial() {
         return cuadriculaEnemigoInicial;
     }
 
-    public CuadriculaJuego getCuadriculaEnemigo(){
-        return enemigo.getCuadriculaEnemigo().getCuadriculaBarcos();
+    public CuadriculaJuego getCuadriculaEnemigo() {
+        return enemigo != null && enemigo.getCuadriculaEnemigo() != null 
+            ? enemigo.getCuadriculaEnemigo().getCuadriculaBarcos() 
+            : null;
     }
 
     public void setView(ViewDisparos view) {
         this.view = view;
-        cuadriculaEnemigoInicial =  enemigo.getCuadriculaEnemigo().getCuadriculaBarcos();
-        gameVController.setGameDispararController(this);
+        if (enemigo != null && enemigo.getCuadriculaEnemigo() != null) {
+            cuadriculaEnemigoInicial = enemigo.getCuadriculaEnemigo().getCuadriculaBarcos();
+        }
+        if (gameVController != null) {
+            gameVController.setGameDispararController(this);
+        }
     }
 
     public void setGameVController(GameVController controller) {
