@@ -15,12 +15,13 @@ public class Game extends Stage implements Serializable {
     private GameVController gameController;
     private Parent root;
 
-    public Game(){
+    public Game(Boolean carga){
         try {
             
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/sesion4/ViewGame.fxml"));
             root = loader.load();
             gameController = loader.getController();
+            gameController.setLoaded(carga);
             gameController.setView(this);
             Scene scene = new Scene(root);
             setScene(scene);

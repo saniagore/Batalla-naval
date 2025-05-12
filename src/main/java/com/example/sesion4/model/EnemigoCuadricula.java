@@ -26,13 +26,13 @@ public class EnemigoCuadricula {
         listaBarcos.add(crearBarcoAleatorio(4, "portaaviones"));
         
         // 2 destructores (3 casillas)
-        listaBarcos.add(crearBarcoAleatorio(3, "destructores"));
-        listaBarcos.add(crearBarcoAleatorio(3, "destructores"));
+        listaBarcos.add(crearBarcoAleatorio(3, "submarinos"));
+        listaBarcos.add(crearBarcoAleatorio(3, "submarinos"));
         
         // 3 submarinos (2 casillas)
-        listaBarcos.add(crearBarcoAleatorio(2, "submarinos"));
-        listaBarcos.add(crearBarcoAleatorio(2, "submarinos"));
-        listaBarcos.add(crearBarcoAleatorio(2, "submarinos"));
+        listaBarcos.add(crearBarcoAleatorio(2, "destructores"));
+        listaBarcos.add(crearBarcoAleatorio(2, "destructores"));
+        listaBarcos.add(crearBarcoAleatorio(2, "destructores"));
         
         // 4 fragatas (1 casilla)
         listaBarcos.add(crearBarcoAleatorio(1, "fragatas"));

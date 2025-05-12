@@ -28,7 +28,7 @@ public class Main extends Application {
             CuadriculaJuego juegoEnemigoActual = gameSave.getCuadriculaEnemigoActual();
             Boolean visualizarInterfazEnemiga = gameSave.getMostrarInterfazEnemiga();
 
-            Game game = new Game();
+            Game game = new Game(true);
             game.getController().setBarcos(barcosAliados);
             game.getController().setCuadriculaJuego(juegoActual);
 
@@ -41,8 +41,11 @@ public class Main extends Application {
             game.getController().setJuegoInicial(juegoInicial);
             gamViewDisparos.getController().setCuadriculaEnemigoInicial(juegoEnemigoInicial);
 
+            if(visualizarInterfazEnemiga){
+                gamViewDisparos.getController().dibujarBarcos();
+            }
             gamViewDisparos.getController().dibujarFigurasHits();
-            //implementar carga de figuras 2D para cuadricula aliada
+            game.getController().dibujarFigurasHits();
 
             PopupWindow.showInfoWindow("Carga exitosa!", "Puede seguir jugando su partida donde la dejo.");
         }else{

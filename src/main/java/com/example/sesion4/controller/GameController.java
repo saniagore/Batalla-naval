@@ -313,7 +313,7 @@ public class GameController extends GameVController {
             return;
         }
 
-        Game game = new Game();
+        Game game = new Game(false);
         game.getController().setBarcos(barcos);
         game.getController().setCuadriculaJuego(this.cuadriculaJuego);
 
@@ -333,7 +333,7 @@ public class GameController extends GameVController {
             return;
         }
 
-        Game game = new Game();
+        Game game = new Game(false);
         game.getController().setBarcos(barcos);
         game.getController().setCuadriculaJuego(this.cuadriculaJuego);
 

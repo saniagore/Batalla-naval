@@ -20,14 +20,15 @@ import com.example.sesion4.view.Figuras;
 public class GameVController implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final double CELL_SIZE = 69.0;
-    
+
+    private Boolean loaded;
     private transient GameDispararController gameDispararController;
     private ArrayList<Barco> barcos = new ArrayList<>();
     private transient Game view;
     private CuadriculaJuego juego;
     private CuadriculaJuego juegoInicial;
     private transient Figuras figuras;
-    
+
     @FXML
     private transient GridPane gridPane;
 
@@ -36,12 +37,12 @@ public class GameVController implements Serializable {
             return;
         }
 
-        gridPane.getChildren().removeIf(node -> node instanceof Pane && 
-            node.getProperties().containsKey("shipPane"));
+        gridPane.getChildren().removeIf(node -> node instanceof Pane &&
+                node.getProperties().containsKey("shipPane"));
 
         barcos.stream()
-            .filter(Objects::nonNull)
-            .forEach(this::dibujarBarco);
+                .filter(Objects::nonNull)
+                .forEach(this::dibujarBarco);
     }
 
     private void dibujarBarco(Barco barco) {
@@ -57,7 +58,7 @@ public class GameVController implements Serializable {
 
         Pane barcoPane = createShipPane(barco, tamaño, esHorizontal);
         ImageView imageView = createShipImageView(barco, barcoPane.getPrefWidth(), barcoPane.getPrefHeight());
-        
+
         if (imageView != null) {
             barcoPane.getChildren().add(imageView);
             positionShipInGrid(barcoPane, rowInicial, colInicial, tamaño, esHorizontal);
@@ -75,14 +76,15 @@ public class GameVController implements Serializable {
 
     private ImageView createShipImageView(Barco barco, double width, double height) {
         String imagenPath = getImagePath(barco);
-        if (imagenPath == null) return null;
+        if (imagenPath == null)
+            return null;
 
         try {
             Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagenPath)));
             if (image.isError()) {
                 throw new RuntimeException("Failed to load image: " + imagenPath);
             }
-            
+
             ImageView imageView = new ImageView(image);
             imageView.setPreserveRatio(false);
             imageView.setFitWidth(width);
@@ -108,7 +110,7 @@ public class GameVController implements Serializable {
 
         String basePath = "/com/example/sesion4/";
         String orientationSuffix = barco.getOrientacion() ? "" : "-vertical";
-        
+
         return switch (barco.getNombre()) {
             case "fragatas" -> basePath + "fragatas" + orientationSuffix + ".png";
             case "destructores" -> basePath + "destructor" + orientationSuffix + ".png";
@@ -128,8 +130,9 @@ public class GameVController implements Serializable {
             switch (cellValue) {
                 case 0 -> handleMiss(row, col);
                 case 1 -> handleHit(row, col);
-                case 2 -> handleAlreadyShot();
-                default -> {}
+                case 2 -> disparosEnemigo(row, col);
+                default -> {
+                }
             }
         } catch (Exception e) {
             System.err.println("Error processing enemy shot: " + e.getMessage());
@@ -154,20 +157,11 @@ public class GameVController implements Serializable {
         }
     }
 
-    private void handleAlreadyShot() {
-        // Implement alternative logic here - perhaps:
-        // 1. Find a nearby cell
-        // 2. Skip this turn
-        // 3. Let the enemy try again
-        System.out.println("Enemy tried to shoot an already hit cell");
-    }
-
     public void cerrarVentana() {
         Platform.exit();
         System.exit(0);
     }
 
-    // Getters and setters with improved null safety
     public Game getView() {
         return view;
     }
@@ -190,7 +184,7 @@ public class GameVController implements Serializable {
 
     public void setView(Game view) {
         this.view = view;
-        
+
         if (view != null && view.getScene() != null) {
             Platform.runLater(() -> {
                 if (view.getScene().getWindow() != null) {
@@ -207,20 +201,52 @@ public class GameVController implements Serializable {
 
     public void setCuadriculaJuego(CuadriculaJuego cuadricula) {
         this.juego = Objects.requireNonNull(cuadricula, "CuadriculaJuego cannot be null");
-        this.juegoInicial = cuadricula;
         this.figuras = new Figuras();
         dibujarBarcos();
+        guardarCuadriculaInicial();
     }
 
     public void setBarcos(ArrayList<Barco> barcos) {
         this.barcos = barcos != null ? new ArrayList<>(barcos) : new ArrayList<>();
     }
 
-    public ArrayList<Barco> getBarcos(){
+    public ArrayList<Barco> getBarcos() {
         return barcos;
     }
 
-    public void setJuegoInicial(CuadriculaJuego juegoInicial){
+    public void setJuegoInicial(CuadriculaJuego juegoInicial) {
         this.juegoInicial = juegoInicial;
+    }
+
+    public void dibujarFigurasHits() {
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                int celdaInicial = juegoInicial.getCelda(i, j);
+                int celdaActual = juego.getCelda(i, j);
+                int gridRow = i + 1;
+                int gridCol = j + 1;
+                if (celdaInicial == 0 && celdaActual == 2) {
+                    figuras.drawX(gridRow, gridCol, gridPane);
+                } else if (celdaInicial == 1 && celdaActual == 2) {
+                    figuras.drawFlame(gridRow, gridCol, gridPane);
+                }
+            }
+        }
+    }
+
+    public void guardarCuadriculaInicial() {
+        if (loaded == false) {
+            juegoInicial = new CuadriculaJuego();
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    int valor = juego.getCelda(i, j);
+                    juegoInicial.setCelda(i, j, valor);
+                }
+            }
+        }
+    }
+
+    public void setLoaded(Boolean loaded) {
+        this.loaded = loaded;
     }
 }

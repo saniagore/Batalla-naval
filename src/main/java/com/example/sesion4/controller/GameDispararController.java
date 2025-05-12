@@ -118,7 +118,7 @@ public class GameDispararController {
         }
     }
 
-    private void dibujarBarcos() {
+    public void dibujarBarcos() {
         if (enemigo == null || enemigo.getCuadriculaEnemigo() == null || gridPane == null) {
             return;
         }
@@ -135,13 +135,13 @@ public class GameDispararController {
             if (posiciones == null || posiciones.isEmpty()) {
                 continue;
             }
-
+            cuadriculaEnemigoInicial.imprimirCuadricula();
             int tamaño = posiciones.size();
-            int rowInicial = 1 + posiciones.get(0).getKey();
-            int colInicial = 1 + posiciones.get(0).getValue();
-            int rowFinal = 1 + posiciones.get(tamaño - 1).getKey();
+            int rowInicial = 2 + posiciones.get(0).getKey();
+            int colInicial = 2 + posiciones.get(0).getValue();
+            int rowFinal = 2 + posiciones.get(tamaño - 1).getKey();
             @SuppressWarnings("unused")
-            int colFinal = 1 + posiciones.get(tamaño - 1).getValue();
+            int colFinal = 2 + posiciones.get(tamaño - 1).getValue();
 
             boolean esHorizontal = rowInicial == rowFinal;
             double cellSize = 69;
