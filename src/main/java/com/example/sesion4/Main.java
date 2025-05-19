@@ -15,7 +15,23 @@ import com.example.sesion4.model.Barco;
 import com.example.sesion4.model.CuadriculaJuego;
 import com.example.sesion4.utils.SaveGame;
 
+/**
+ * Main class that launches the game application.
+ * Extends {@link javafx.application.Application} to create a JavaFX application.
+ * 
+ * <p>This class handles game initialization, including loading saved games
+ * and creating new game sessions.</p>
+ * 
+ * @author Santiago Vanegas Torres
+ * @version 1.0
+ */
 public class Main extends Application {
+
+    /**
+     * The entry point for the JavaFX application.
+     * 
+     * @param primaryStage The primary stage for this application
+     */
     @Override
     public void start(Stage primaryStage) {
         SaveGame gameSave = loadGame();
@@ -53,16 +69,25 @@ public class Main extends Application {
         }
     }
 
+    /**
+     * The main method that launches the application.
+     * 
+     * @param args Command line arguments
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * Attempts to load a previously saved game from the default save file.
+     * 
+     * @return The loaded SaveGame object, or null if no save file exists or an error occurs
+     */
     private SaveGame loadGame(){
         try(FileInputStream fileInputStream = new FileInputStream("savedgame.txt");
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)){
             return(SaveGame) objectInputStream.readObject();
         }catch (IOException | ClassNotFoundException e) {
-            // If the file does not exist or an error occurs, return null
             return null;
         }
     }

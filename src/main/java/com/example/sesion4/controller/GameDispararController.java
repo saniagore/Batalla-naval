@@ -16,6 +16,10 @@ import com.example.sesion4.view.PopupWindow;
 import com.example.sesion4.view.ViewDisparos;
 import com.example.sesion4.view.Figuras;
 
+/**
+ * Controller for managing shooting mechanics and enemy interactions.
+ * Handles player shots, enemy responses, and game state visualization.
+ */
 public class GameDispararController {
     private CuadriculaJuego cuadriculaEnemigoInicial;
     private ViewDisparos view;
@@ -27,6 +31,14 @@ public class GameDispararController {
     @FXML
     private GridPane gridPane;
 
+
+    /**
+     * Initializes the controller by:
+     * - Setting up enemy AI
+     * - Configuring cell click handlers
+     * - Saving initial enemy grid state
+     * - Setting up window close handler
+     */
     @FXML
     public void initialize() {
         figuras = new Figuras();
@@ -54,6 +66,9 @@ public class GameDispararController {
         });
     }
 
+    /**
+     * Sets up mouse click handlers for each grid cell.
+     */
     private void setupCellClickHandlers() {
         if (gridPane == null)
             return;
@@ -70,6 +85,12 @@ public class GameDispararController {
         });
     }
 
+    /**
+     * Handles player clicks on grid cells.
+     * @param event The mouse event
+     * @param row Grid row (1-10)
+     * @param col Grid column (1-10)
+     */
     private void handleCellClick(MouseEvent event, int row, int col) {
         if (enemigo == null || enemigo.getCuadriculaEnemigo() == null || gameVController == null) {
             return;
@@ -116,6 +137,9 @@ public class GameDispararController {
         }
     }
 
+    /**
+     * Draws enemy ships on the grid (when visible).
+     */
     public void dibujarBarcos() {
         if (enemigo == null || enemigo.getCuadriculaEnemigo() == null || gridPane == null) {
             return;
@@ -141,17 +165,30 @@ public class GameDispararController {
         }
     }
 
+    /**
+     * Closes the game window and exits the application.
+     */
     public void cerrarVentana() {
         Platform.exit();
         System.exit(0);
     }
 
+    /**
+     * Toggles enemy ship visibility on the grid.
+     */
     public void visualizarInterfazEnemiga() {
         if (view != null && view.getVisualizar()) {
             dibujarBarcos();
         }
     }
 
+    /**
+     * Saves the current game state including:
+     * - Player grid states
+     * - Enemy grid states
+     * - Ship positions
+     * - Visibility settings
+     */
     public void saveGame() {
         try {
             boolean visualizar = view != null && Boolean.TRUE.equals(view.getVisualizar());
@@ -173,40 +210,71 @@ public class GameDispararController {
         }
     }
 
+    /**
+     * @return The associated GameVController
+     */
     public GameVController getGameVController() {
         return gameVController;
     }
 
+    /**
+     * @return The initial enemy grid state
+     */
     public CuadriculaJuego getCuadriculaEnemigoInicial() {
         return cuadriculaEnemigoInicial;
     }
 
+    /**
+     * Sets the loaded state flag.
+     * @param loaded true if game was loaded from save
+     */
     public void setLoaded(Boolean loaded) {
         this.loaded = loaded;
     }
 
+    /**
+     * @return The current enemy grid state
+     */
     public CuadriculaJuego getCuadriculaEnemigo() {
         return enemigo != null && enemigo.getCuadriculaEnemigo() != null
                 ? enemigo.getCuadriculaEnemigo().getCuadriculaBarcos()
                 : null;
     }
 
+    /**
+     * Sets the associated ViewDisparos instance.
+     * @param view The view to associate
+     */
     public void setView(ViewDisparos view) {
         this.view = view;
     }
 
+    /**
+     * Sets the main game controller reference.
+     * @param controller The GameVController instance
+     */
     public void setGameVController(GameVController controller) {
         this.gameVController = controller;
     }
 
+    /**
+     * @return The enemy AI instance
+     */
     public Enemigo getEnemigo() {
         return enemigo;
     }
 
+    /**
+     * Sets the initial enemy grid reference.
+     * @param cuadriculaEnemigoInicial The initial grid state
+     */    
     public void setCuadriculaEnemigoInicial(CuadriculaJuego cuadriculaEnemigoInicial) {
         this.cuadriculaEnemigoInicial = cuadriculaEnemigoInicial;
     }
 
+    /**
+     * Draws hit/miss markers on the grid based on game state.
+     */
     public void dibujarFigurasHits() {
         if (cuadriculaEnemigoInicial == null || enemigo == null ||
                 enemigo.getCuadriculaEnemigo() == null || gridPane == null) {
@@ -230,6 +298,9 @@ public class GameDispararController {
         }
     }
 
+    /**
+     * Saves the initial enemy grid state for reference.
+     */
     public void guardarCuadriculaEnemigoInicial() {
         if (loaded == false && tiros == 0) {
             cuadriculaEnemigoInicial = new CuadriculaJuego();

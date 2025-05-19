@@ -19,6 +19,11 @@ import javafx.geometry.Point2D;
 import java.util.ArrayList;
 import javafx.util.Pair;
 
+/**
+ * Controller for managing ship placement and game initialization.
+ * Handles player ship positioning, orientation, and game start transitions.
+ * Extends GameVController to inherit basic game functionality.
+ */
 public class GameController extends GameVController {
     @SuppressWarnings("unused")
     private GameV view;
@@ -50,6 +55,12 @@ public class GameController extends GameVController {
     String selectedShip = "";
     Boolean isHorizontal = true;
 
+    /**
+     * Initializes the controller by:
+     * - Setting up the game grid
+     * - Creating ship type mappings
+     * - Configuring click handlers for grid and ships
+     */
     @FXML
     public void initialize() {
         cuadriculaJuego = new CuadriculaJuego();
@@ -63,12 +74,11 @@ public class GameController extends GameVController {
 
         setupCellClickHandlers();
         setupShipClickHandlers();
-
     }
 
-    // CELDAS GRIDPANE
-    // -------------------------------------------------------------------------------------------
-
+    /**
+     * Sets up click handlers for all grid cells.
+     */
     private void setupCellClickHandlers() {
         gridPane.getChildren().forEach(node -> {
             Integer row = GridPane.getRowIndex(node);
@@ -82,6 +92,12 @@ public class GameController extends GameVController {
         });
     }
 
+    /**
+     * Handles grid cell clicks for ship placement/removal.
+     * @param event The mouse event
+     * @param row Grid row (1-10)
+     * @param col Grid column (1-10)
+     */
     private void handleCellClick(MouseEvent event, int row, int col) {
         switch (event.getButton()) {
             case PRIMARY:
@@ -105,10 +121,10 @@ public class GameController extends GameVController {
                             cantFragatas++;
                         }catch(Exception e){
                             if (e.getMessage().equals("Cantidad de fragatas máxima alcanzada")) {
-                                PopupWindow.Window("Límite alcanzado", e.getMessage());
+                                PopupWindow.showInfoWindow("Límite alcanzado", e.getMessage());
                             } else {
                                 barcos.removeLast();
-                                PopupWindow.Window("Error de validación", e.getMessage());
+                                PopupWindow.showInfoWindow("Error de validación", e.getMessage());
                             }
                         }
 
@@ -124,9 +140,9 @@ public class GameController extends GameVController {
                         }catch(Exception e){
                             if(e.getMessage().equals("Estas intentado colocar un barco sobre otro")){
                                 barcos.removeLast();
-                                PopupWindow.Window("Error", e.getMessage());
+                                PopupWindow.showInfoWindow("Error", e.getMessage());
                             }else{
-                                PopupWindow.Window("Error", e.getMessage());
+                                PopupWindow.showInfoWindow("Error", e.getMessage());
                             }
                         }
 
@@ -141,9 +157,9 @@ public class GameController extends GameVController {
                         }catch(Exception e){
                             if(e.getMessage().equals("Estas intentado colocar un barco sobre otro")){
                                 barcos.removeLast();
-                                PopupWindow.Window("Error", e.getMessage());
+                                PopupWindow.showInfoWindow("Error", e.getMessage());
                             }else{
-                                PopupWindow.Window("Error", e.getMessage());
+                                PopupWindow.showInfoWindow("Error", e.getMessage());
                             }
                         }
 
@@ -159,16 +175,16 @@ public class GameController extends GameVController {
                         } catch (Exception e) {
                             if(e.getMessage().equals("Estas intentado colocar un barco sobre otro")){
                                 barcos.removeLast();
-                                PopupWindow.Window("Error", e.getMessage());
+                                PopupWindow.showInfoWindow("Error", e.getMessage());
                             }else{
-                                PopupWindow.Window("Error", e.getMessage());
+                                PopupWindow.showInfoWindow("Error", e.getMessage());
                             }
                         }
 
                         break;
 
                     default:
-                        PopupWindow.Window("Error", "Seleccione una nave primero para colocar");
+                        PopupWindow.showInfoWindow("Error", "Seleccione una nave primero para colocar");
                         break;
                 }
                 break;
@@ -181,9 +197,10 @@ public class GameController extends GameVController {
                 break;
         }
     }
-    // PANE
-    // ----------------------------------------------------------------------------------------
 
+    /**
+     * Sets up click handlers for ship selection panes.
+     */
     private void setupShipClickHandlers() {
         // Agregar manejadores de eventos a cada tipo de barco
         portaaviones.setOnMouseClicked(this::handleShipClick);
@@ -192,6 +209,10 @@ public class GameController extends GameVController {
         fragatas.setOnMouseClicked(this::handleShipClick);
     }
 
+    /**
+     * Handles ship pane clicks to select ship type.
+     * @param event The mouse event
+     */
     private void handleShipClick(MouseEvent event) {
         Pane clickedShip = (Pane) event.getSource();
         originalPosition = new Point2D(clickedShip.getLayoutX(), clickedShip.getLayoutY());
@@ -199,12 +220,20 @@ public class GameController extends GameVController {
         event.consume();
     }
 
-    // --------------------------------------------------------------------------------------------
-
+    /**
+     * Sets orientation for the last placed ship.
+     */
     public void asignarOrientacion(){
         barcos.get(barcos.size() - 1).setOrientacion(isHorizontal);
     }
 
+    /**
+     * Places ship positions on grid based on size and orientation.
+     * @param tamaño Ship size in cells
+     * @param row Starting row (1-10)
+     * @param col Starting column (1-10)
+     * @throws RuntimeException if placement is invalid
+     */
     public void asignarValores(int tamaño, int row, int col) {
         for (int i = 0; i < tamaño; i++) {
             int newRow = isHorizontal ? row : row + i;
@@ -241,7 +270,11 @@ public class GameController extends GameVController {
         }
     }
 
-
+    /**
+     * Removes a ship from specified coordinates.
+     * @param row Grid row (1-10)
+     * @param col Grid column (1-10)
+     */
     public void removerBarco(int row, int col) {
         Boolean isRemove = false;
         Barco barcoToRemove = null;
@@ -305,11 +338,14 @@ public class GameController extends GameVController {
         }
     }
 
-
+    /**
+     * Starts the game with normal mode if all ships are placed.
+     * Shows error if ship placement is incomplete.
+     */
     @FXML
     public void iniciarJuego() {
         if(cantDestructores+cantFragatas+cantPortaAviones+cantSubmarinos!=10){
-            PopupWindow.Window("Error", "Debe primero colocar todos los barcos");
+            PopupWindow.showInfoWindow("Error", "Debe primero colocar todos los barcos");
             return;
         }
 
@@ -326,10 +362,14 @@ public class GameController extends GameVController {
         PopupWindow.showInfoWindow("Batalla naval", "Haga click en la cuadricula vacia para disparar");
     }
 
+    /**
+     * Starts the game in test mode (showing enemy interface) if all ships are placed.
+     * Shows error if ship placement is incomplete.
+     */
     @FXML
     public void juegoPrueba(){
         if(cantDestructores+cantFragatas+cantPortaAviones+cantSubmarinos!=10){
-            PopupWindow.Window("Error", "Debe primero colocar todos los barcos");
+            PopupWindow.showInfoWindow("Error", "Debe primero colocar todos los barcos");
             return;
         }
 
@@ -347,11 +387,18 @@ public class GameController extends GameVController {
         PopupWindow.showInfoWindow("Batalla naval", "Haga click en la cuadricula vacia para disparar, este modo podras visualizar la interfaz del enemigo");
     }
 
+    /**
+     * Toggles ship placement orientation between horizontal and vertical.
+     */
     @FXML
     public void posicion() {
         isHorizontal = !isHorizontal;
     }
 
+    /**
+     * Sets the associated GameV view.
+     * @param view The GameV instance
+     */
     public void setView(GameV view) {
         this.view = view;
     }

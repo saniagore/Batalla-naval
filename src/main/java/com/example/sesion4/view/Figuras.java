@@ -22,7 +22,19 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 
+
+/**
+ * Utility class for drawing game elements including hit markers and ships.
+ * Implements Serializable to support game state persistence.
+ */
 public class Figuras implements Serializable{
+
+    /**
+     * Draws an animated flame effect at the specified grid position.
+     * @param row The row index of the target cell
+     * @param col The column index of the target cell
+     * @param gridPane The GridPane containing the game board
+     */
     public void drawFlame(int row, int col, GridPane gridPane) {
         Pane targetPane = null;
         for (javafx.scene.Node node : gridPane.getChildren()) {
@@ -66,6 +78,14 @@ public class Figuras implements Serializable{
         }
     }
 
+    /**
+     * Creates a flame-shaped path with specified dimensions and color.
+     * @param width The base width of the flame
+     * @param height The base height of the flame
+     * @param color The color of the flame
+     * @param scale The scaling factor to apply
+     * @return Configured Path object representing a flame
+     */
     private Path createFlamePath(double width, double height, Color color, double scale) {
         Path flame = new Path();
 
@@ -111,6 +131,10 @@ public class Figuras implements Serializable{
         return flame;
     }
 
+    /**
+     * Creates a spark effect with random position and size.
+     * @return Circle representing a spark particle
+     */
     private Circle createSpark() {
         Random rand = new Random();
         Circle spark = new Circle(
@@ -121,6 +145,10 @@ public class Figuras implements Serializable{
         return spark;
     }
 
+    /**
+     * Applies animation effects to a flame group.
+     * @param flameGroup The group containing flame elements to animate
+     */
     private void animateFlame(Group flameGroup) {
         Timeline flickerTimeline = new Timeline(
                 new KeyFrame(Duration.millis(50), e -> {
@@ -168,6 +196,12 @@ public class Figuras implements Serializable{
         waveTransition.play();
     }
 
+    /**
+     * Draws an X marker at the specified grid position.
+     * @param row The row index of the target cell
+     * @param col The column index of the target cell
+     * @param gridPane The GridPane containing the game board
+     */
     public void drawX(int row, int col, GridPane gridPane) {
         Pane targetPane = null;
         for (javafx.scene.Node node : gridPane.getChildren()) {
@@ -211,6 +245,10 @@ public class Figuras implements Serializable{
         }
     }
 
+    /**
+     * Animates an X marker with a scaling effect.
+     * @param xGroup The group containing the X elements
+     */
     private void animateX(Group xGroup) {
         xGroup.setScaleX(0);
         xGroup.setScaleY(0);
@@ -222,10 +260,15 @@ public class Figuras implements Serializable{
         timeline.play();
     }
 
-
-
-
-
+/**
+     * Draws a ship at the specified position based on type and orientation.
+     * @param startRow The starting row index
+     * @param startCol The starting column index
+     * @param gridPane The GridPane containing the game board
+     * @param tipoBarco The type of ship to draw
+     * @param esHorizontal Whether the ship is horizontal
+     * @param tamaño The size/length of the ship
+     */
     public void drawBarco(int startRow, int startCol, GridPane gridPane, String tipoBarco, boolean esHorizontal, int tamaño) {
         switch (tipoBarco.toLowerCase()) {
             case "fragatas":
@@ -244,7 +287,13 @@ public class Figuras implements Serializable{
                 System.err.println("Tipo de barco no reconocido: " + tipoBarco);
         }
     }
-    
+
+    /**
+     * Draws a frigate at the specified position.
+     * @param row The row index
+     * @param col The column index
+     * @param gridPane The GridPane containing the game board
+     */
     private void drawFragata(int row, int col, GridPane gridPane) {
         Pane targetPane = getTargetPane(row, col, gridPane);
         if (targetPane != null) {
@@ -262,6 +311,14 @@ public class Figuras implements Serializable{
         }
     }
     
+    /**
+     * Draws a destroyer at the specified position.
+     * @param startRow The starting row index
+     * @param startCol The starting column index
+     * @param gridPane The GridPane containing the game board
+     * @param esHorizontal Whether the ship is horizontal
+     * @param tamaño The size/length of the ship
+     */
     private void drawDestructor(int startRow, int startCol, GridPane gridPane, boolean esHorizontal, int tamaño) {
         // Crear un grupo que abarque todas las celdas del barco
         Group destructor = new Group();
@@ -321,6 +378,15 @@ public class Figuras implements Serializable{
         }
     }
     
+
+    /**
+     * Draws a submarine at the specified position.
+     * @param startRow The starting row index
+     * @param startCol The starting column index
+     * @param gridPane The GridPane containing the game board
+     * @param esHorizontal Whether the ship is horizontal
+     * @param tamaño The size/length of the ship
+     */
     private void drawSubmarino(int startRow, int startCol, GridPane gridPane, boolean esHorizontal, int tamaño) {
         Group submarino = new Group();
         
@@ -380,6 +446,14 @@ public class Figuras implements Serializable{
         }
     }
     
+    /**
+     * Draws an aircraft carrier at the specified position.
+     * @param startRow The starting row index
+     * @param startCol The starting column index
+     * @param gridPane The GridPane containing the game board
+     * @param esHorizontal Whether the ship is horizontal
+     * @param tamaño The size/length of the ship
+     */
     private void drawPortaaviones(int startRow, int startCol, GridPane gridPane, boolean esHorizontal, int tamaño) {
         Group portaaviones = new Group();
         
@@ -452,7 +526,14 @@ public class Figuras implements Serializable{
             }
         }
     }
-    
+
+    /**
+     * Finds and returns the Pane at the specified grid position.
+     * @param row The row index
+     * @param col The column index
+     * @param gridPane The GridPane to search in
+     * @return The Pane at the specified position, or null if not found
+     */
     private Pane getTargetPane(int row, int col, GridPane gridPane) {
         for (javafx.scene.Node node : gridPane.getChildren()) {
             Integer nodeRow = GridPane.getRowIndex(node);
