@@ -375,11 +375,8 @@ public class GameController extends GameVController {
                 int rNode = nodeRow == null ? 0 : nodeRow;
                 int cNode = nodeCol == null ? 0 : nodeCol;
                 if (rNode == fNewRow && cNode == fNewCol && node instanceof Pane) {
+                    @SuppressWarnings("unused")
                     Pane targetPane = (Pane) node;
-                    // This was previously setting background, now it should draw the actual ship part
-                    // This part will be replaced by direct calls to figuras.drawX, etc.
-                    // For now, let's keep it commented out or remove it after moving to new draw methods
-                    // targetPane.setStyle("-fx-background-color: linear-gradient(to bottom right,rgb(123, 149, 253),rgb(42, 10, 246),rgb(46, 205, 244))");
                 }
             });
         }
