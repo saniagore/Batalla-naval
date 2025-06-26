@@ -136,7 +136,7 @@ public class Figuras implements Serializable{
      * @return Circle representing a spark particle
      */
     private Circle createSpark() {
-        Random rand = new Random();
+        Random rand =  new Random();
         Circle spark = new Circle(
                 rand.nextDouble() * 30, 
                 rand.nextDouble() * 50, 
@@ -262,6 +262,7 @@ public class Figuras implements Serializable{
 
 /**
      * Draws a ship at the specified position based on type and orientation.
+     * This method is intended for drawing ships across multiple cells of a GridPane.
      * @param startRow The starting row index
      * @param startCol The starting column index
      * @param gridPane The GridPane containing the game board
@@ -270,34 +271,47 @@ public class Figuras implements Serializable{
      * @param tamaño The size/length of the ship
      */
     public void drawBarco(int startRow, int startCol, GridPane gridPane, String tipoBarco, boolean esHorizontal, int tamaño) {
+        // This method will draw the ship across multiple panes if size > 1
+        // For single cell ships or the beginning of a multi-cell ship, we'll delegate to the single-pane draw methods.
+        
+        // This part needs to be carefully handled to avoid drawing redundant shapes
+        // If a ship occupies multiple cells, we typically draw the entire ship shape once
+        // and then adjust its position relative to the starting cell's pane.
+
+        // For now, let's keep this as it is for drawing pre-existing ships (e.g. from loaded game)
+        // and add new methods for placing individual ship segments or full ships on a single clicked pane.
+        
         switch (tipoBarco.toLowerCase()) {
             case "fragatas":
-                drawFragata(startRow, startCol, gridPane);
+                // For a 1-cell fragata, we can directly draw on the pane
+                Pane targetPaneFragata = getTargetPane(startRow, startCol, gridPane);
+                if (targetPaneFragata != null) {
+                    drawFragataOnPane(targetPaneFragata);
+                }
                 break;
             case "destructores":
-                drawDestructor(startRow, startCol, gridPane, esHorizontal, tamaño);
+                drawDestructorMultiCell(startRow, startCol, gridPane, esHorizontal, tamaño);
                 break;
             case "submarinos":
-                drawSubmarino(startRow, startCol, gridPane, esHorizontal, tamaño);
+                drawSubmarinoMultiCell(startRow, startCol, gridPane, esHorizontal, tamaño);
                 break;
             case "portaaviones":
-                drawPortaaviones(startRow, startCol, gridPane, esHorizontal, tamaño);
+                drawPortaavionesMultiCell(startRow, startCol, gridPane, esHorizontal, tamaño);
                 break;
             default:
                 System.err.println("Tipo de barco no reconocido: " + tipoBarco);
         }
     }
 
+    // New methods for drawing ships on a single Pane (for placement)
+
     /**
-     * Draws a frigate at the specified position.
-     * @param row The row index
-     * @param col The column index
-     * @param gridPane The GridPane containing the game board
+     * Draws a frigate on a specific pane.
+     * @param pane The Pane where the frigate will be drawn
      */
-    private void drawFragata(int row, int col, GridPane gridPane) {
-        Pane targetPane = getTargetPane(row, col, gridPane);
-        if (targetPane != null) {
-            targetPane.getChildren().clear();
+    public void drawFragataOnPane(Pane pane) {
+        if (pane != null) {
+            pane.getChildren().clear();
             
             Circle fragata = new Circle(30, 30, 25);
             fragata.setFill(Color.rgb(100, 150, 200));
@@ -307,222 +321,232 @@ public class Figuras implements Serializable{
             Circle centro = new Circle(30, 30, 15);
             centro.setFill(Color.rgb(150, 200, 250));
             
-            targetPane.getChildren().addAll(fragata, centro);
+            pane.getChildren().addAll(fragata, centro);
         }
     }
-    
-    /**
-     * Draws a destroyer at the specified position.
-     * @param startRow The starting row index
-     * @param startCol The starting column index
-     * @param gridPane The GridPane containing the game board
-     * @param esHorizontal Whether the ship is horizontal
-     * @param tamaño The size/length of the ship
-     */
-    private void drawDestructor(int startRow, int startCol, GridPane gridPane, boolean esHorizontal, int tamaño) {
-        // Crear un grupo que abarque todas las celdas del barco
-        Group destructor = new Group();
-        
-        // Cuerpo principal
-        Rectangle cuerpo;
-        if (esHorizontal) {
-            cuerpo = new Rectangle(0, 20, tamaño * 60, 30);
-        } else {
-            cuerpo = new Rectangle(20, 0, 30, tamaño * 60);
-        }
-        cuerpo.setFill(Color.rgb(80, 130, 180));
-        cuerpo.setStroke(Color.rgb(50, 100, 150));
-        cuerpo.setStrokeWidth(2);
-        cuerpo.setArcWidth(15);
-        cuerpo.setArcHeight(15);
-        
-        // Torre de mando
-        Rectangle torre;
-        if (esHorizontal) {
-            torre = new Rectangle((tamaño * 60) / 2 - 10, 10, 20, 15);
-        } else {
-            torre = new Rectangle(10, (tamaño * 60) / 2 - 10, 15, 20);
-        }
-        torre.setFill(Color.rgb(120, 170, 220));
-        torre.setStroke(Color.rgb(80, 130, 180));
-        torre.setStrokeWidth(1);
-        
-        // Cañón
-        Rectangle canon;
-        if (esHorizontal) {
-            canon = new Rectangle((tamaño * 60) / 2 - 3, 5, 6, 10);
-        } else {
-            canon = new Rectangle(5, (tamaño * 60) / 2 - 3, 10, 6);
-        }
-        canon.setFill(Color.rgb(60, 60, 60));
-        
-        destructor.getChildren().addAll(cuerpo, torre, canon);
-        
-        // Añadir el grupo a todas las celdas que ocupa el barco
-        for (int i = 0; i < tamaño; i++) {
-            int row = esHorizontal ? startRow : startRow + i;
-            int col = esHorizontal ? startCol + i : startCol;
-            
-            Pane pane = getTargetPane(row, col, gridPane);
-            if (pane != null) {
-                pane.getChildren().clear();
-                pane.getChildren().add(destructor);
-                
-                // Ajustar posición relativa en cada celda
-                if (esHorizontal) {
-                    destructor.setTranslateX(-i * 60);
-                } else {
-                    destructor.setTranslateY(-i * 60);
-                }
-            }
-        }
-    }
-    
 
     /**
-     * Draws a submarine at the specified position.
+     * Draws a destroyer on a specific pane, considering its segment within a multi-cell ship.
+     * @param pane The Pane where the destroyer segment will be drawn
+     * @param esHorizontal Whether the ship is horizontal
+     * @param segmentIndex The index of the segment (0 to tamaño-1)
+     * @param tamaño The total size of the ship
+     */
+    public void drawDestructorOnPane(Pane pane, boolean esHorizontal, int segmentIndex, int tamaño) {
+        if (pane != null) {
+            pane.getChildren().clear();
+            Group destructorPart = new Group();
+
+            Rectangle bodyPart;
+            if (esHorizontal) {
+                // Each segment is 60 units wide
+                bodyPart = new Rectangle(0, 20, 60, 30); 
+            } else {
+                // Each segment is 60 units tall
+                bodyPart = new Rectangle(20, 0, 30, 60);
+            }
+            bodyPart.setFill(Color.rgb(80, 130, 180));
+            bodyPart.setStroke(Color.rgb(50, 100, 150));
+            bodyPart.setStrokeWidth(2);
+            bodyPart.setArcWidth(15);
+            bodyPart.setArcHeight(15);
+
+            destructorPart.getChildren().add(bodyPart);
+
+            // Add command tower and cannon only to the first segment for visual coherence
+            if (segmentIndex == 0) {
+                Rectangle torre;
+                Rectangle canon;
+                if (esHorizontal) {
+                    torre = new Rectangle(60 / 2 - 10, 10, 20, 15);
+                    canon = new Rectangle(60 / 2 - 3, 5, 6, 10);
+                } else {
+                    torre = new Rectangle(10, 60 / 2 - 10, 15, 20);
+                    canon = new Rectangle(5, 60 / 2 - 3, 10, 6);
+                }
+                torre.setFill(Color.rgb(120, 170, 220));
+                torre.setStroke(Color.rgb(80, 130, 180));
+                torre.setStrokeWidth(1);
+                canon.setFill(Color.rgb(60, 60, 60));
+                destructorPart.getChildren().addAll(torre, canon);
+            }
+            pane.getChildren().add(destructorPart);
+        }
+    }
+
+
+    /**
+     * Draws a submarine on a specific pane, considering its segment within a multi-cell ship.
+     * @param pane The Pane where the submarine segment will be drawn
+     * @param esHorizontal Whether the ship is horizontal
+     * @param segmentIndex The index of the segment (0 to tamaño-1)
+     * @param tamaño The total size of the ship
+     */
+    public void drawSubmarinoOnPane(Pane pane, boolean esHorizontal, int segmentIndex, int tamaño) {
+        if (pane != null) {
+            pane.getChildren().clear();
+            Group submarinoPart = new Group();
+
+            Shape bodyPart;
+            if (esHorizontal) {
+                bodyPart = new Ellipse(30, 20, 30, 15); // Each segment is 60 wide
+            } else {
+                bodyPart = new Ellipse(20, 30, 15, 30); // Each segment is 60 tall
+            }
+            bodyPart.setFill(Color.rgb(70, 100, 120));
+            bodyPart.setStroke(Color.rgb(40, 70, 90));
+            bodyPart.setStrokeWidth(2);
+            submarinoPart.getChildren().add(bodyPart);
+
+            // Add tower and windows only to specific segments for visual coherence
+            if (segmentIndex == 0) { // Or a central segment, adjust as needed
+                Shape torre;
+                if (esHorizontal) {
+                    torre = new Ellipse(30, 10, 8, 5);
+                } else {
+                    torre = new Ellipse(10, 30, 5, 8);
+                }
+                torre.setFill(Color.rgb(90, 130, 150));
+                torre.setStroke(Color.rgb(60, 100, 120));
+                submarinoPart.getChildren().add(torre);
+            }
+            
+            // Add a window to each segment
+            Circle ventana;
+            if (esHorizontal) {
+                ventana = new Circle(30, 20, 3, Color.rgb(200, 230, 255));
+            } else {
+                ventana = new Circle(20, 30, 3, Color.rgb(200, 230, 255));
+            }
+            submarinoPart.getChildren().add(ventana);
+
+            pane.getChildren().add(submarinoPart);
+        }
+    }
+
+    /**
+     * Draws an aircraft carrier on a specific pane, considering its segment within a multi-cell ship.
+     * @param pane The Pane where the aircraft carrier segment will be drawn
+     * @param esHorizontal Whether the ship is horizontal
+     * @param segmentIndex The index of the segment (0 to tamaño-1)
+     * @param tamaño The total size of the ship
+     */
+    public void drawPortaavionesOnPane(Pane pane, boolean esHorizontal, int segmentIndex, int tamaño) {
+        if (pane != null) {
+            pane.getChildren().clear();
+            Group portaavionesPart = new Group();
+
+            Rectangle cubiertaPart;
+            if (esHorizontal) {
+                cubiertaPart = new Rectangle(0, 15, 60, 30);
+            } else {
+                cubiertaPart = new Rectangle(15, 0, 30, 60);
+            }
+            cubiertaPart.setFill(Color.rgb(120, 140, 160));
+            cubiertaPart.setStroke(Color.rgb(90, 110, 130));
+            cubiertaPart.setStrokeWidth(2);
+            portaavionesPart.getChildren().add(cubiertaPart);
+
+            // Add structure and tower only to specific segments
+            if (segmentIndex == 0) { // Or a more appropriate segment for the tower
+                Rectangle estructura;
+                Rectangle torre;
+                if (esHorizontal) {
+                    estructura = new Rectangle(10, 5, 60 - 20, 10);
+                    torre = new Rectangle(60 / 2 - 5, 0, 10, 15);
+                } else {
+                    estructura = new Rectangle(5, 10, 10, 60 - 20);
+                    torre = new Rectangle(0, 60 / 2 - 5, 15, 10);
+                }
+                estructura.setFill(Color.rgb(100, 120, 140));
+                estructura.setStroke(Color.rgb(70, 90, 110));
+                torre.setFill(Color.rgb(80, 100, 120));
+                torre.setStroke(Color.rgb(50, 70, 90));
+                portaavionesPart.getChildren().addAll(estructura, torre);
+            }
+
+            // Add deck lines to each segment
+            Line linea;
+            if (esHorizontal) {
+                linea = new Line(10, 30, 50, 30);
+            } else {
+                linea = new Line(30, 10, 30, 50);
+            }
+            linea.setStroke(Color.rgb(200, 200, 200));
+            linea.setStrokeWidth(1);
+            portaavionesPart.getChildren().add(linea);
+
+            pane.getChildren().add(portaavionesPart);
+        }
+    }
+
+
+    /**
+     * Draws a frigate at the specified position.
+     * @param row The row index
+     * @param col The column index
+     * @param gridPane The GridPane containing the game board
+     * @deprecated Use {@link #drawFragataOnPane(Pane)} instead for single cell drawing.
+     */
+    @Deprecated
+    public void drawFragata(int row, int col, GridPane gridPane) {
+        Pane targetPane = getTargetPane(row, col, gridPane);
+        drawFragataOnPane(targetPane);
+    }
+    
+    /**
+     * Draws a destroyer across multiple cells (for initial setup or loading).
      * @param startRow The starting row index
      * @param startCol The starting column index
      * @param gridPane The GridPane containing the game board
      * @param esHorizontal Whether the ship is horizontal
      * @param tamaño The size/length of the ship
      */
-    private void drawSubmarino(int startRow, int startCol, GridPane gridPane, boolean esHorizontal, int tamaño) {
-        Group submarino = new Group();
-        
-        // Cuerpo principal
-        Shape cuerpo;
-        if (esHorizontal) {
-            cuerpo = new Ellipse((tamaño * 60) / 2, 20, (tamaño * 30), 15);
-        } else {
-            cuerpo = new Ellipse(20, (tamaño * 60) / 2, 15, (tamaño * 30));
-        }
-        cuerpo.setFill(Color.rgb(70, 100, 120));
-        cuerpo.setStroke(Color.rgb(40, 70, 90));
-        cuerpo.setStrokeWidth(2);
-        
-        // Torre
-        Shape torre;
-        if (esHorizontal) {
-            torre = new Ellipse((tamaño * 60) / 2, 10, 8, 5);
-        } else {
-            torre = new Ellipse(10, (tamaño * 60) / 2, 5, 8);
-        }
-        torre.setFill(Color.rgb(90, 130, 150));
-        torre.setStroke(Color.rgb(60, 100, 120));
-        
-        // Ventanas
-        submarino.getChildren().addAll(cuerpo, torre);
-        
-        if (esHorizontal) {
-            for (int i = 1; i < tamaño; i++) {
-                Circle ventana = new Circle(i * 60 - 30, 20, 3, Color.rgb(200, 230, 255));
-                submarino.getChildren().add(ventana);
-            }
-        } else {
-            for (int i = 1; i < tamaño; i++) {
-                Circle ventana = new Circle(20, i * 60 - 30, 3, Color.rgb(200, 230, 255));
-                submarino.getChildren().add(ventana);
-            }
-        }
-        
-        // Añadir el grupo a todas las celdas que ocupa el barco
+    private void drawDestructorMultiCell(int startRow, int startCol, GridPane gridPane, boolean esHorizontal, int tamaño) {
         for (int i = 0; i < tamaño; i++) {
             int row = esHorizontal ? startRow : startRow + i;
             int col = esHorizontal ? startCol + i : startCol;
-            
             Pane pane = getTargetPane(row, col, gridPane);
             if (pane != null) {
-                pane.getChildren().clear();
-                pane.getChildren().add(submarino);
-                
-                // Ajustar posición relativa en cada celda
-                if (esHorizontal) {
-                    submarino.setTranslateX(-i * 60);
-                } else {
-                    submarino.setTranslateY(-i * 60);
-                }
+                drawDestructorOnPane(pane, esHorizontal, i, tamaño);
             }
         }
     }
     
     /**
-     * Draws an aircraft carrier at the specified position.
+     * Draws a submarine across multiple cells (for initial setup or loading).
      * @param startRow The starting row index
      * @param startCol The starting column index
      * @param gridPane The GridPane containing the game board
      * @param esHorizontal Whether the ship is horizontal
      * @param tamaño The size/length of the ship
      */
-    private void drawPortaaviones(int startRow, int startCol, GridPane gridPane, boolean esHorizontal, int tamaño) {
-        Group portaaviones = new Group();
-        
-        // Cubierta principal
-        Rectangle cubierta;
-        if (esHorizontal) {
-            cubierta = new Rectangle(0, 15, tamaño * 60, 30);
-        } else {
-            cubierta = new Rectangle(15, 0, 30, tamaño * 60);
-        }
-        cubierta.setFill(Color.rgb(120, 140, 160));
-        cubierta.setStroke(Color.rgb(90, 110, 130));
-        cubierta.setStrokeWidth(2);
-        
-        // Estructura superior
-        Rectangle estructura;
-        if (esHorizontal) {
-            estructura = new Rectangle(10, 5, tamaño * 60 - 20, 10);
-        } else {
-            estructura = new Rectangle(5, 10, 10, tamaño * 60 - 20);
-        }
-        estructura.setFill(Color.rgb(100, 120, 140));
-        estructura.setStroke(Color.rgb(70, 90, 110));
-        
-        // Torre de control
-        Rectangle torre;
-        if (esHorizontal) {
-            torre = new Rectangle((tamaño * 60) / 2 - 5, 0, 10, 15);
-        } else {
-            torre = new Rectangle(0, (tamaño * 60) / 2 - 5, 15, 10);
-        }
-        torre.setFill(Color.rgb(80, 100, 120));
-        torre.setStroke(Color.rgb(50, 70, 90));
-        
-        // Líneas de la cubierta
-        portaaviones.getChildren().addAll(cubierta, estructura, torre);
-        
-        if (esHorizontal) {
-            for (int i = 0; i < tamaño; i++) {
-                Line linea = new Line(i * 60 + 10, 30, i * 60 + 50, 30);
-                linea.setStroke(Color.rgb(200, 200, 200));
-                linea.setStrokeWidth(1);
-                portaaviones.getChildren().add(linea);
-            }
-        } else {
-            for (int i = 0; i < tamaño; i++) {
-                Line linea = new Line(30, i * 60 + 10, 30, i * 60 + 50);
-                linea.setStroke(Color.rgb(200, 200, 200));
-                linea.setStrokeWidth(1);
-                portaaviones.getChildren().add(linea);
-            }
-        }
-        
-        // Añadir el grupo a todas las celdas que ocupa el barco
+    private void drawSubmarinoMultiCell(int startRow, int startCol, GridPane gridPane, boolean esHorizontal, int tamaño) {
         for (int i = 0; i < tamaño; i++) {
             int row = esHorizontal ? startRow : startRow + i;
             int col = esHorizontal ? startCol + i : startCol;
-            
             Pane pane = getTargetPane(row, col, gridPane);
             if (pane != null) {
-                pane.getChildren().clear();
-                pane.getChildren().add(portaaviones);
-                
-                // Ajustar posición relativa en cada celda
-                if (esHorizontal) {
-                    portaaviones.setTranslateX(-i * 60);
-                } else {
-                    portaaviones.setTranslateY(-i * 60);
-                }
+                drawSubmarinoOnPane(pane, esHorizontal, i, tamaño);
+            }
+        }
+    }
+    
+    /**
+     * Draws an aircraft carrier across multiple cells (for initial setup or loading).
+     * @param startRow The starting row index
+     * @param startCol The starting column index
+     * @param gridPane The GridPane containing the game board
+     * @param esHorizontal Whether the ship is horizontal
+     * @param tamaño The size/length of the ship
+     */
+    private void drawPortaavionesMultiCell(int startRow, int startCol, GridPane gridPane, boolean esHorizontal, int tamaño) {
+        for (int i = 0; i < tamaño; i++) {
+            int row = esHorizontal ? startRow : startRow + i;
+            int col = esHorizontal ? startCol + i : startCol;
+            Pane pane = getTargetPane(row, col, gridPane);
+            if (pane != null) {
+                drawPortaavionesOnPane(pane, esHorizontal, i, tamaño);
             }
         }
     }
